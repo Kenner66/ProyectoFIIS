@@ -14,7 +14,9 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+LOGIN_URL = 'signin'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'signin'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -22,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-7p-lz)jc)&jtvb80^%3g^-d$$$b2q$hm#kbok=c)ol7-l-_d&j'
 
+AUTH_USER_MODEL = 'usuarios.Usuario'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'usuarios'
 ]
 
 MIDDLEWARE = [
