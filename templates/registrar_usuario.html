@@ -1,0 +1,30 @@
+<!-- templates/registrar_usuario.html -->
+{% extends 'base.html' %}  <!-- Extiende la plantilla base -->
+
+{% block title %}
+    Registrar Usuario
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Registrar Usuario</h2>
+        <form method="POST">
+            {% csrf_token %}  <!-- Token de seguridad -->
+            {{ form.as_p }}  <!-- Muestra el formulario en formato de párrafos -->
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+
+        <!-- Mostrar errores en la página -->
+        {% if form.errors %}
+            <div class="alert alert-danger mt-3">
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

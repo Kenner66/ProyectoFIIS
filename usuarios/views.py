@@ -23,8 +23,11 @@ def home_estudiante(request):
 
 def signin(request):
     if request.user.is_authenticated:
-        return redirect('home')  # Si ya está autenticado, lo lleva a la home genérica
-    
+        # Redirige según el rol del usuario autenticado
+        if request.user.is_rol_admin:  # Si es administrador
+            return redirect('home_admin')
+        else:  # Asumimos que es estudiante
+            return redirect('home_estudiante')
     if request.method == "GET":
         return render(request, "signin.html", {"form": AuthenticationForm})
     else:
@@ -62,7 +65,7 @@ def registrar_usuario(request):
         form = UsuarioCreationForm(request.POST)
         if form.is_valid():
             form.save()  # Guardamos el nuevo usuario, pero no iniciamos sesión con él
-            return redirect('home')  # Redirige directamente al home
+            return redirect('home-admin')  # Redirige directamente al home-admin
     else:
         form = UsuarioCreationForm()  # Si es GET, muestra el formulario vacío
 

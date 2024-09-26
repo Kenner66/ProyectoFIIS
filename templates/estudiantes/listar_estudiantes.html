@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Lista de Estudiantes</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Codigo</th>
+            <th>Base</th>
+            <th>Carrera</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for estudiante in estudiantes %}
+        <tr>
+            <td>{{ estudiante.id }}</td>
+            <td>{{ estudiante.usuario.username }}</td>
+            <td>{{ estudiante.codigo }}</td>
+            <td>{{ estudiante.base }}</td>
+            <td>{{ estudiante.carrera }}</td>
+            <td>{{ estudiante.activo|yesno:"Sí,No" }}</td>
+            <td>
+                <a href="{% url 'editar_estudiante' estudiante.pk %}">Editar</a> |
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No hay estudiantes registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'agregar_estudiante' %}">Agregar Estudiante</a>
+{% endblock %}
+
