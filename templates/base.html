@@ -8,7 +8,7 @@
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">Sistema UNFV</a>
+            <a class="navbar-brand" href="{% url 'home_admin' %}">Sistema UNFV</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -22,6 +22,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'listar_estudiantes' %}">Estudiantes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listar_cursos' %}">Cursos</a>
                     </li>
                     <!-- Puedes agregar más enlaces aquí -->
                 </ul>

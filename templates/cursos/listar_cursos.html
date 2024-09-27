@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Lista de Cursos</h2>
+  <table>
+    <tr>
+      <th>Código</th>
+      <th>Nombre</th>
+      <th>Acciones</th>
+    </tr>
+    {% for curso in cursos %}
+      <tr>
+        <td>{{ curso.codigo }}</td>
+        <td>{{ curso.nombre }}</td>
+        <td>
+          <a href="{% url 'editar_curso' curso.pk %}">Editar</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+  <a href="{% url 'agregar_curso' %}">Agregar Curso</a>
+{% endblock %}

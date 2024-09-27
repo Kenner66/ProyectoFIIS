@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Información del Estudiante</h2>
+  <p><strong>Usuario:</strong> {{ estudiante.usuario.username }}</p>
+  <p><strong>Nombre:</strong> {{ estudiante.informacionpersonal.nombre }}</p>
+  <p><strong>Apellido:</strong> {{ estudiante.informacionpersonal.apellido }}</p>
+  <p><strong>DNI:</strong> {{ estudiante.informacionpersonal.dni }}</p>
+  <p><strong>Fecha de Nacimiento:</strong> {{ estudiante.informacionpersonal.fecha_nacimiento }}</p>
+  <a href="{% url 'editar_informacion_personal' estudiante.pk %}">Editar Información Personal</a>
+  <a href="{% url 'listar_estudiantes' %}">Volver a la lista</a>
+{% endblock %}

@@ -65,7 +65,7 @@ def registrar_usuario(request):
         form = UsuarioCreationForm(request.POST)
         if form.is_valid():
             form.save()  # Guardamos el nuevo usuario, pero no iniciamos sesión con él
-            return redirect('home-admin')  # Redirige directamente al home-admin
+            return redirect('home_admin')  # Redirige directamente al home-admin
     else:
         form = UsuarioCreationForm()  # Si es GET, muestra el formulario vacío
 

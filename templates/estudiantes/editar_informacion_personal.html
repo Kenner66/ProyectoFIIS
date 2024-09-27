@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Editar Información Personal de {{ estudiante.usuario.username }}</h2>
+  <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Guardar Cambios</button>
+  </form>
+  <a href="{% url 'listar_estudiantes' %}">Volver a la lista de estudiantes</a>
+{% endblock %}
