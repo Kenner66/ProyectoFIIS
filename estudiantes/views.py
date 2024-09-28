@@ -13,6 +13,8 @@ def listar_estudiantes(request):
 @role_required('Administrador')
 def agregar_estudiante(request):
     if request.method == 'POST':
+        if 'cancelar' in request.POST:
+            return redirect('listar_estudiantes')
         form = EstudianteForm(request.POST)
         if form.is_valid():
             form.save()
