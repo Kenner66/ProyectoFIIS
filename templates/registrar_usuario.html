@@ -1,30 +1,49 @@
-<!-- templates/registrar_usuario.html -->
-{% extends 'base.html' %}  <!-- Extiende la plantilla base -->
+{% extends 'base.html' %}
 
-{% block title %}
-    Registrar Usuario
+{% load static %}
+
+{% block title %}Registrar Usuario{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <h2>Registrar Usuario</h2>
-        <form method="POST">
-            {% csrf_token %}  <!-- Token de seguridad -->
-            {{ form.as_p }}  <!-- Muestra el formulario en formato de párrafos -->
-            <button type="submit" class="btn btn-primary">Registrar</button>
-        </form>
+    <div class="registration-container">
+        <form class="registration-form" method="POST">
+            <h2>Registro de Usuarios</h2>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {% if field.name == 'rol' %}
+                        <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="select-role">
+                            <option value="" selected disabled>Seleccionar Rol</option>
+                            {% for value, label in field.field.choices %}
+                                {% if value != "" %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="field-error">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit">Registrar</button>
 
-        <!-- Mostrar errores en la página -->
-        {% if form.errors %}
-            <div class="alert alert-danger mt-3">
-                <ul>
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+            {% if form.non_field_errors %}
+                <div class="error-list">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+        </form>
     </div>
 {% endblock %}

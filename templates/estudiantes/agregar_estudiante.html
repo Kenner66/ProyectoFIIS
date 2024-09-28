@@ -1,11 +1,21 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block title %}Agregar Estudiante{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h2>Agregar Estudiante</h2>
-  <form method="post">
+<div class="registration-container">
+  <form class="registration-form" method="POST">
+    <h2>Agregar Estudiante</h2>
     {% csrf_token %}
-    {{ form.as_p }}  <!-- Muestra el formulario de forma organizada -->
+    {{ form.as_p }}
     <button type="submit">Guardar Estudiante</button>
+    <button type="submit_2"><a href="{% url 'listar_estudiantes' %}">Volver a la lista</a></button>
   </form>
-  <a href="{% url 'listar_estudiantes' %}">Volver a la lista</a>
+</div>
 {% endblock %}

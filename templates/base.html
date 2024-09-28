@@ -1,56 +1,81 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{% block title %}Sistema UNFV{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image" href="/static/assets/favicon.ico"/>
+    <link  href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+    
+    <title>Sistema Administrador UNFV</title>
 </head>
 <body>
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home_admin' %}">Sistema UNFV</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home_admin' %}">Home</a>
-                    </li>
-                    <li class="nav-item"></li>
-                        <a class="nav-link" href="{% url 'registrar_usuario' %}">Usuarios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'listar_estudiantes' %}">Estudiantes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'listar_cursos' %}">Cursos</a>
-                    </li>
-                    <!-- Puedes agregar más enlaces aquí -->
-                </ul>
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'signout' %}">Cerrar Sesión</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'signin' %}">Iniciar Sesión</a>
-                        </li>
-                    {% endif %}
-                </ul>
+    <!--Inicio de Barra Lateral Izquierda-->
+    <div class="container">
+        <aside>
+            <div class="top">
+                <div class="logo">
+                    <img src="/static/assets/logo_base.png" alt="logo">
+                </div>
+                <div class="close" id="close-btn">
+                    <span class="material-icons-sharp">close</span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <a href="{% url 'home_admin' %}" class="active">
+                    <span class="material-icons-sharp">grid_view</span>
+                    <h3>Inicio</h3>
+                </a>
+                <a href="{% url 'registrar_usuario' %}" >
+                    <span class="material-icons-sharp">app_registration</span>
+                    <h3>Registro</h3>
+                </a>
+                <a href="{% url 'listar_estudiantes' %}">
+                    <span class="material-icons-sharp">person_outline</span>
+                    <h3>Estudiantes</h3>
+                </a>
+                <a href="{% url 'listar_cursos' %}">
+                    <span class="material-icons-sharp">menu_book</span>
+                    <h3>Cursos</h3>
+                </a>
+                <a href="{% url 'signout' %}">
+                    <span class="material-icons-sharp">logout</span>
+                    <h3>Cerrar Sesión</h3>
+                </a>
+            </div>
+        </aside>
+        <!--Fin de Barra Lateral Izquierda-->
+        <!--Inicio Principal Administrador-->
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+        <!--Fin Principal Administrador-->
+        <!--Inicio de Barra Lateral Derecha-->
+        <div class="right">
+            <div class="top">
+                <button id="menu-btn">
+                    <span class="material-icons-sharp">menu</span>
+                </button>
+                <div class="profile">
+                    <div class="info">
+                        <p>Hola, <b>{{ request.user.username }}</b></p>
+                        <small class="text-muted">Administrador</small>
+                    </div>
+
+                    <div class="profile-photo">
+                        <img src="/static/assets/perfil_admin.png" alt="perfil_admin">
+                    </div>
+                </div>
+
             </div>
         </div>
-    </nav>
-
-    <!-- Contenido principal -->
-    <main class="container mt-4">
-        {% block content %}
-        {% endblock %}
-    </main>
-
-    <!-- Scripts de Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!--Fin de Barra Lateral Derecha-->
+    </div>
+    <script src="{% static 'js/base.js' %}"></script>
 </body>
 </html>
 

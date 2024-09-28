@@ -125,7 +125,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Si tienes una carpeta general de estáticos
+    BASE_DIR / 'static' # Si tienes una carpeta general de estáticos
 ]
 
 # Default primary key field type

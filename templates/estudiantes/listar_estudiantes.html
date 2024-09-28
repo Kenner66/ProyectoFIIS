@@ -1,48 +1,57 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block title %}Lista de Estudiantes{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Lista de Estudiantes</h2>
-
-<table border="1">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Codigo</th>
-            <th>Base</th>
-            <th>Carrera</th>
-            <th>Activo</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for estudiante in estudiantes %}
-        <tr>
-            <td>{{ estudiante.id }}</td>
-            <td>{{ estudiante.usuario.username }}</td>
-            <td>{{ estudiante.codigo }}</td>
-            <td>{{ estudiante.base }}</td>
-            <td>{{ estudiante.carrera }}</td>
-            <td>{{ estudiante.activo|yesno:"Sí,No" }}</td>
-            <td>
-                <a href="{% url 'editar_estudiante' estudiante.pk %}">Editar</a> 
-                {% if estudiante.informacionpersonal %}
-                    <span>Información Personal Agregada</span>
-                {% else %}
-                    <a href="{% url 'agregar_informacion_personal' estudiante.pk %}">Agregar Información Personal</a>
-                {% endif %}
-                <a href="{% url 'ver_informacion_estudiante' estudiante.pk %}">Ver Información</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No hay estudiantes registrados.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<a href="{% url 'agregar_estudiante' %}">Agregar Estudiante</a>
-
+<div class="student-list-container">
+    <h2>Lista de Estudiantes</h2>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Código</th>
+                    <th>Base</th>
+                    <th>Carrera</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estudiante in estudiantes %}
+                <tr>
+                    <td>{{ estudiante.id }}</td>
+                    <td>{{ estudiante.usuario.username }}</td>
+                    <td>{{ estudiante.codigo }}</td>
+                    <td>{{ estudiante.base }}</td>
+                    <td>{{ estudiante.carrera }}</td>
+                    <td>{{ estudiante.activo|yesno:"Sí,No" }}</td>
+                    <td class="actions">
+                        <a href="{% url 'editar_estudiante' estudiante.pk %}" class="btn btn-edit">Editar</a> 
+                            {% if estudiante.informacionpersonal %}
+                        <span>Información Personal Agregada</span>
+                            {% else %}
+                        <a href="{% url 'agregar_informacion_personal' estudiante.pk %}" class="btn btn-edit">Agregar Información Personal</a>
+                            {% endif %}
+                        <a href="{% url 'ver_informacion_estudiante' estudiante.pk %}" class="btn btn-view">Ver</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No hay estudiantes registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <button type="submit"><a href="{% url 'agregar_estudiante'%}" class="btn btn-add">Agregar Estudiante</a></button>
+</div>
 {% endblock %}
 

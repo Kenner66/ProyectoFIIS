@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block title %}Agregar Informacion{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h2>Agregar Información Personal para {{ estudiante.usuario.username }}</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar</button>
-  </form>
+  <div class="registration-container">
+    <form class="registration-form" method="POST">
+      <h2>Agregar Información Personal para {{ estudiante.usuario.username }}</h2>
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Guardar</button>
+    </form>
+  </div>
 {% endblock %}

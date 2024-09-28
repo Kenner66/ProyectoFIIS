@@ -1,21 +1,42 @@
 {% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Lista de Cursos{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h2>Lista de Cursos</h2>
-  <table>
-    <tr>
-      <th>Código</th>
-      <th>Nombre</th>
-      <th>Acciones</th>
-    </tr>
-    {% for curso in cursos %}
-      <tr>
-        <td>{{ curso.codigo }}</td>
-        <td>{{ curso.nombre }}</td>
-        <td>
-          <a href="{% url 'editar_curso' curso.pk %}">Editar</a>
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
-  <a href="{% url 'agregar_curso' %}">Agregar Curso</a>
+<div class="student-list-container">
+    <h2>Lista de Cursos</h2>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for curso in cursos %}
+                <tr>
+                  <td>{{ curso.codigo }}</td>
+                  <td>{{ curso.nombre }}</td>
+                  <td>
+                    <a href="{% url 'editar_curso' curso.pk %}">Editar</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No hay cursos en lista.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'agregar_curso' %}">Agregar Curso</a>
+</div>
 {% endblock %}
