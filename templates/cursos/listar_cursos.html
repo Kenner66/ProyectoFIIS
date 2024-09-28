@@ -26,7 +26,7 @@
                   <td>{{ curso.codigo }}</td>
                   <td>{{ curso.nombre }}</td>
                   <td>
-                    <a href="{% url 'editar_curso' curso.pk %}">Editar</a>
+                    <a href="{% url 'editar_curso' curso.pk %}"class="btn btn-edit">Editar</a>
                   </td>
                 </tr>
                 {% empty %}
@@ -37,6 +37,6 @@
             </tbody>
         </table>
     </div>
-    <a href="{% url 'agregar_curso' %}">Agregar Curso</a>
+    <a href="{% url 'agregar_curso' %}" class="btn btn-add">Agregar Curso</a>
 </div>
 {% endblock %}

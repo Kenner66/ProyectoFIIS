@@ -13,10 +13,26 @@
         <form class="registration-form" method="POST">
             <h2>Editar Estudiante</h2>
             {% csrf_token %}
-            {{ form.as_p }}
-    <button type="submit">Actualizar Estudiante</button>
-    <button type="submit_2"><a href="{% url 'listar_estudiantes' %}">Volver a la lista</a></button>
-  </form>
-  </div>
+            {% for field in form %}
+                <div class="form-group">
+                    {% if field.name == 'activo' %}
+                        <label for="{{ field.id_for_label }}">
+                            {{ field }} {{ field.label }}
+                        </label>
+                    {% else %}
+                        {{ field.label_tag }}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit">Actualizar Estudiante</button>
+            <a href="{% url 'listar_estudiantes' %}" class="button button-secondary">Volver a la lista</a>
+        </form>
+    </div>
 {% endblock %}
-

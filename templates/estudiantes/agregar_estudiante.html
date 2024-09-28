@@ -13,7 +13,24 @@
   <form class="registration-form" method="POST">
     <h2>Agregar Estudiante</h2>
     {% csrf_token %}
-    {{ form.as_p }}
+    {% for field in form %}
+                <div class="form-group">
+                    {% if field.name == 'activo' %}
+                        <label for="{{ field.id_for_label }}">
+                            {{ field }} {{ field.label }}
+                        </label>
+                    {% else %}
+                        {{ field.label_tag }}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
     <button type="submit">Guardar Estudiante</button>
     <a href="{% url 'listar_estudiantes' %}" class="button">Volver a la lista</a>
   </form>

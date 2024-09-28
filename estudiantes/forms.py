@@ -4,9 +4,12 @@ from usuarios.models import Usuario
 from django.db.models import Q
 
 class EstudianteForm(forms.ModelForm):
+    activo = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+
     class Meta:
         model = Estudiante
         fields = ['usuario', 'codigo', 'base', 'carrera', 'activo']
+
 
     def __init__(self, *args, **kwargs):
         super(EstudianteForm, self).__init__(*args, **kwargs)
@@ -25,6 +28,11 @@ class EstudianteForm(forms.ModelForm):
             self.fields['usuario'].queryset = Usuario.objects.filter(
                 rol__nombre_rol="Estudiante"
             ).exclude(id__in=estudiantes)
+        
+        
+        for field in self.fields:
+            if field != 'activo':
+                self.fields[field].widget.attrs['class'] = 'form-control'
 
 
 class InformacionPersonalForm(forms.ModelForm):

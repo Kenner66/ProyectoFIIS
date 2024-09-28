@@ -18,8 +18,8 @@
     <p><strong>Apellido:</strong> {{ estudiante.informacionpersonal.apellido }}</p>
     <p><strong>DNI:</strong> {{ estudiante.informacionpersonal.dni }}</p>
     <p><strong>Fecha de Nacimiento:</strong> {{ estudiante.informacionpersonal.fecha_nacimiento }}</p>
-    <a href="{% url 'editar_informacion_personal' estudiante.pk %}">Editar Información Personal</a>
-    <a href="{% url 'listar_estudiantes' %}">Volver a la lista</a>
+    <a href="{% url 'editar_informacion_personal' estudiante.pk %}" class="button">Editar Información Personal</a>
+    <a href="{% url 'listar_estudiantes' %}" class="button">Volver a la lista</a>
   </form>
 </div>
 {% endblock %}

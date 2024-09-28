@@ -68,6 +68,7 @@ body {
     font-size: 14px;
     text-decoration: none;
     transition: background-color 0.3s;
+    text-align: center;
 }
 
 .btn-edit {
@@ -88,12 +89,12 @@ body {
     margin-top: 20px;
     display: block;
     width: 100%;
-    text-align: center;
 }
 
 .btn:hover {
     opacity: 0.8;
 }
+
 
 @media (max-width: 768px) {
     .student-table {
