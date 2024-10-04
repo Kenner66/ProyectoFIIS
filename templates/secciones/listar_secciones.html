@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Listar Secciones{% endblock %}
+
+{% block content %}
+<h2>Listar Secciones</h2>
+<a href="{% url 'agregar_seccion' %}">Agregar Sección</a>
+<table>
+    <thead>
+        <tr>
+            <th>Curso</th>
+            <th>Nombre</th>
+            <th>Cupos Totales</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for seccion in secciones %}
+        <tr>
+            <td>{{ seccion.curso.nombre }}</td>
+            <td>{{ seccion.nombre }}</td>
+            <td>{{ seccion.cupos_totales }}</td>
+            <td>
+                <a href="{% url 'editar_seccion' seccion.id %}">Editar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
