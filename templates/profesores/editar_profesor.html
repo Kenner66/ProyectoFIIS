@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Profesor{% endblock %}
+
+{% block content %}
+<h2>Editar Profesor: {{ profesor.nombre }} {{ profesor.apellido }}</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Actualizar</button>
+</form>
+<a href="{% url 'listar_profesores' %}">Volver a la lista</a>
+{% endblock %}
