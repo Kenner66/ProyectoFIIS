@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Nota{% endblock %}
+
+{% block content %}
+<h2>Agregar Nota para {{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar Nota</button>
+</form>
+
+<a href="{% url 'historial_notas_estudiante' estudiante.id %}">Volver al Historial de Notas</a>
+
+{% endblock %}
