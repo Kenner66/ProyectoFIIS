@@ -1,28 +1,38 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Lista de Estudiantes{% endblock %}
 
-{% block content %}
-<h2>Lista de Estudiantes</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for estudiante in estudiantes %}
-        <tr>
-            <td>{{ estudiante.codigo }}</td>
-            <td>{{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</td>
-            <td>
-                <a href="{% url 'historial_notas_estudiante' estudiante.id %}">Ver Historial de Notas</a>
-                
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
 {% endblock %}
+
+{% block content %}
+<div class="student-list-container">
+    <h2>Lista de Estudiantes</h2>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estudiante in estudiantes %}
+                <tr>
+                    <td>{{ estudiante.codigo }}</td>
+                    <td>{{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</td>
+                    <td>
+                        <a href="{% url 'historial_notas_estudiante' estudiante.id %}" class="btn-2 btn-add-2">Ver Historial de Notas</a>  
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

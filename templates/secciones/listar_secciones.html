@@ -1,30 +1,41 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Listar Secciones{% endblock %}
 
-{% block content %}
-<h2>Listar Secciones</h2>
-<a href="{% url 'agregar_seccion' %}">Agregar Sección</a>
-<table>
-    <thead>
-        <tr>
-            <th>Curso</th>
-            <th>Nombre</th>
-            <th>Cupos Totales</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for seccion in secciones %}
-        <tr>
-            <td>{{ seccion.curso.nombre }}</td>
-            <td>{{ seccion.nombre }}</td>
-            <td>{{ seccion.cupos_totales }}</td>
-            <td>
-                <a href="{% url 'editar_seccion' seccion.id %}">Editar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
 {% endblock %}
+
+{% block content %}
+<div class="student-list-container">
+    <h2>Listar Secciones</h2>
+    <a href="{% url 'agregar_seccion' %}" class="btn btn-add">Agregar Sección</a>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Nombre</th>
+                    <th>Cupos Totales</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for seccion in secciones %}
+                <tr>
+                    <td>{{ seccion.curso.nombre }}</td>
+                    <td>{{ seccion.nombre }}</td>
+                    <td>{{ seccion.cupos_totales }}</td>
+                    <td>
+                        <a href="{% url 'editar_seccion' seccion.id %}" class="btn-2 btn-add-2">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

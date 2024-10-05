@@ -1,13 +1,21 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Editar Sección{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Editar Sección</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Actualizar</button>
-</form>
-<a href="{% url 'listar_secciones' %}">Regresar a la lista de secciones</a>
+    <div class="registration-container">
+        <form class="registration-form" method="POST">
+            <h2>Editar Sección</h2>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Actualizar</button>
+            <button type="submit_2"><a href="{% url 'listar_secciones' %}">Regresar a la lista de secciones</a></button>
+  </form>
+  </div>
 {% endblock %}

@@ -1,37 +1,48 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Lista de Horarios{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Lista de Horarios</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Curso</th>
-            <th>Profesor</th>
-            <td>Seccion</td>
-            <th>Día</th>
-            <th>Hora Inicio</th>
-            <th>Hora Fin</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for horario in horarios %}
-        <tr>
-            <td>{{ horario.curso.nombre }}</td>
-            <td>{{ horario.profesor.nombre }} {{ horario.profesor.apellido }}</td>
-            <td>{{ horario.seccion }}</td>
-            <td>{{ horario.dia_semana }}</td>
-            <td>{{ horario.hora_inicio }}</td>
-            <td>{{ horario.hora_fin }}</td>
-            <td>
-                <a href="{% url 'editar_horario' horario.id %}">Editar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'listar_secciones' %}">Secciones</a>
-<a href="{% url 'agregar_horario' %}">Agregar Horario</a>
+<div class="student-list-container">
+    <h2>Lista de Horarios</h2>
+    <a href="{% url 'agregar_profesor' %}" class="btn btn-add">Agregar Profesor</a>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Profesor</th>
+                    <td>Seccion</td>
+                    <th>Día</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for horario in horarios %}
+                <tr>
+                    <td>{{ horario.curso.nombre }}</td>
+                    <td>{{ horario.profesor.nombre }} {{ horario.profesor.apellido }}</td>
+                    <td>{{ horario.seccion }}</td>
+                    <td>{{ horario.dia_semana }}</td>
+                    <td>{{ horario.hora_inicio }}</td>
+                    <td>{{ horario.hora_fin }}</td>
+                    <td>
+                        <a href="{% url 'editar_horario' horario.id %}" class="btn-2 btn-add-2">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'listar_secciones' %}" class="btn btn-add">Secciones</a>
+        <a href="{% url 'agregar_horario' %}" class="btn btn-add">Agregar Horario</a>
+    </div>
+</div>
 {% endblock %}

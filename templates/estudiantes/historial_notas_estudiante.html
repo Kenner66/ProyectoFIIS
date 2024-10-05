@@ -1,27 +1,36 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Historial de Notas de {{ estudiante.usuario.username }}{% endblock %}
 
-{% block content %}
-<h2>Historial de Notas de <td>{{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</td></h2>
-<table>
-    <thead>
-        <tr>
-            <th>Curso</th>
-            <th>Semestre</th>
-            <th>Nota</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for nota in historial %}
-        <tr>
-            <td>{{ nota.curso.nombre }}</td>
-            <td>{{ nota.semestre }}</td>
-            <td>{{ nota.nota }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'agregar_nota' estudiante.id %}">Agregar Nueva Nota</a>
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
 
+{% block content %}
+<div class="student-list-container">
+    <h2>Historial de Notas de <td>{{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</td></h2>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Semestre</th>
+                    <th>Nota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nota in historial %}
+                <tr>
+                    <td>{{ nota.curso.nombre }}</td>
+                    <td>{{ nota.semestre }}</td>
+                    <td>{{ nota.nota }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'agregar_nota' estudiante.id %}" class="btn btn-add">Agregar Nueva Nota</a>
+    </div>
+</div>
 {% endblock %}

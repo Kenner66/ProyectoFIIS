@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Matrículas{% endblock %}
+
+{% block content %}
+<h2>Lista de Matrículas</h2>
+<a href="{% url 'matricular_estudiante' %}">Agregar Matrícula</a>
+<table>
+    <thead>
+        <tr>
+            <th>Estudiante</th>
+            <th>Curso</th>
+            <th>Sección</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for estudiante, matriculas in matriculas_info.items %}
+            {% for matricula in matriculas %}
+            <tr>
+                <td>{{ estudiante }}</td>
+                <td>{{ matricula.curso.nombre }}</td>
+                <td>{{ matricula.seccion }}</td>
+                <td>
+                    <a href="{% url 'editar_matricula' matricula.id %}">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        {% empty %}
+            <tr>
+                <td colspan="4">No hay matrículas disponibles.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

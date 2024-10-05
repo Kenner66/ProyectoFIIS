@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Agregar Nota{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Agregar Nota para {{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</h2>
-
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar Nota</button>
-</form>
-
-<a href="{% url 'historial_notas_estudiante' estudiante.id %}">Volver al Historial de Notas</a>
-
+    <div class="registration-container">
+        <form class="registration-form" method="POST">
+            <h2>Agregar Nota para {{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</h2>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar Nota</button>
+            <button type="submit_2"><a href="{% url 'historial_notas_estudiante' estudiante.id %}">Volver al Historial de Notas</a></button>
+  </form>
+  </div>
 {% endblock %}

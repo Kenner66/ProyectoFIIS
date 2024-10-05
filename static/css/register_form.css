@@ -74,7 +74,7 @@
 
 button[type="submit"] {
     width: 100%;
-    padding: 10px; 
+    padding: 10px;
     background-color: #F25C05;
     color: white;
     border: none;
@@ -83,6 +83,7 @@ button[type="submit"] {
     cursor: pointer;
     transition: background-color 0.3s;
     margin-top: 10px; 
+    padding-top: 10px;
 }
 
 button[type="submit"]:hover {
@@ -160,6 +161,7 @@ button[type="submit_3"]:hover {
     text-align: center;
     text-decoration: none;
     box-sizing: border-box;
+    
 }
 
 .button:hover {
@@ -214,6 +216,7 @@ button[type="submit_3"]:hover {
 
 /* Button styling */
 .button {
+    
     display: inline-block;
     width: 100%;
     padding: 10px;
@@ -226,6 +229,7 @@ button[type="submit_3"]:hover {
     text-align: center;
     text-decoration: none;
     box-sizing: border-box;
+
 }
 
 .button-primary {
@@ -241,6 +245,8 @@ button[type="submit_3"]:hover {
 .button:hover {
     opacity: 0.8;
 }
+
+
 
 
 

@@ -1,53 +1,61 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Agregar Horario{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Agregar Horario</h2>
-<form method="post" id="horarioForm">
-    {% csrf_token %}
+    <div class="registration-container">
+        <form class="registration-form" method="POST">
+            <h2>Agregar Horario</h2>
+            {% csrf_token %}
 
-    {% if form.non_field_errors %}
-        <div class="error">
-            {{ form.non_field_errors }}
-        </div>
-    {% endif %}
+            {% if form.non_field_errors %}
+                <div class="error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+        
+            <div id="horarioContainer">
+                <div class="horarioEntry">
+                    <label for="curso">Curso:</label>
+                    {{ form.curso }}
+        
+                    <label for="profesor">Profesor:</label>
+                    {{ form.profesor }}
+        
+                    <label for="seccion">Sección:</label>
+                    {{ form.seccion }}
+        
+                    <label for="dia">Día:</label>
+                    <select name="dia_semana[]" required>
+                        <option value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                    </select>
+        
+                    <label for="hora_inicio">Hora Inicio:</label>
+                    <input type="time" name="hora_inicio[]" required>
+        
+                    <label for="hora_fin">Hora Fin:</label>
+                    <input type="time" name="hora_fin[]" required>
+                </div>
+            </div>
+        
+            <button type="submit" id="addHorario">+ Agregar otro día</button>
+            <button type="submit">Guardar</button>
+            <button type="submit_2"><a href="{% url 'listar_horarios' %}" class="btn btn-add">Regresar a la lista de horarios</a></button>
+  </form>
+  </div>
 
-    <div id="horarioContainer">
-        <div class="horarioEntry">
-            <label for="curso">Curso:</label>
-            {{ form.curso }}
-
-            <label for="profesor">Profesor:</label>
-            {{ form.profesor }}
-
-            <label for="seccion">Sección:</label>
-            {{ form.seccion }}
-
-            <label for="dia">Día:</label>
-            <select name="dia_semana[]" required>
-                <option value="Lunes">Lunes</option>
-                <option value="Martes">Martes</option>
-                <option value="Miércoles">Miércoles</option>
-                <option value="Jueves">Jueves</option>
-                <option value="Viernes">Viernes</option>
-                <option value="Sábado">Sábado</option>
-            </select>
-
-            <label for="hora_inicio">Hora Inicio:</label>
-            <input type="time" name="hora_inicio[]" required>
-
-            <label for="hora_fin">Hora Fin:</label>
-            <input type="time" name="hora_fin[]" required>
-        </div>
-    </div>
-
-    <button type="button" id="addHorario">+ Agregar otro día</button>
-    <button type="submit">Guardar</button>
-</form>
-<a href="{% url 'listar_horarios' %}">Regresar a la lista de horarios</a>
-
-<script>
+  <script>
     document.getElementById('addHorario').addEventListener('click', function() {
         // Crear un nuevo div para el nuevo horario
         var newEntry = document.createElement('div');

@@ -1,32 +1,42 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Lista de Profesores{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Lista de Profesores</h2>
-<a href="{% url 'agregar_profesor' %}">Agregar Profesor</a>
-<table>
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>DNI</th>
-            <th>Teléfono</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for profesor in profesores %}
-        <tr>
-            <td>{{ profesor.nombre }}</td>
-            <td>{{ profesor.apellido }}</td>
-            <td>{{ profesor.dni }}</td>
-            <td>{{ profesor.telefono }}</td>
-            <td>
-                <a href="{% url 'editar_profesor' profesor.id %}">Editar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="student-list-container">
+    <h2>Lista de Profesores</h2>
+    <a href="{% url 'agregar_profesor' %}" class="btn btn-add">Agregar Profesor</a>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>DNI</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profesor in profesores %}
+                <tr>
+                    <td>{{ profesor.nombre }}</td>
+                    <td>{{ profesor.apellido }}</td>
+                    <td>{{ profesor.dni }}</td>
+                    <td>{{ profesor.telefono }}</td>
+                    <td>
+                        <a href="{% url 'editar_profesor' profesor.id %}" class="btn-2 btn-add-2">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

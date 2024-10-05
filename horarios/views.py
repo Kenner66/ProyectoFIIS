@@ -18,33 +18,40 @@ def listar_horarios(request):
 @role_required('Administrador')
 def agregar_horario(request):
     if request.method == 'POST':
-        # Obtenemos los datos de los campos en forma de lista
         dias = request.POST.getlist('dia_semana[]')
         horas_inicio = request.POST.getlist('hora_inicio[]')
         horas_fin = request.POST.getlist('hora_fin[]')
 
-        # Obtener las instancias de curso, profesor y sección solo una vez
-        curso = Curso.objects.get(pk=request.POST['curso'])  # Obtener la instancia del curso
-        profesor = Profesor.objects.get(pk=request.POST['profesor'])  # Obtener la instancia del profesor
-        seccion = Seccion.objects.get(pk=request.POST['seccion'])  # Obtener la instancia de la sección
+        curso = Curso.objects.get(pk=request.POST['curso'])
+        profesor = Profesor.objects.get(pk=request.POST['profesor'])
+        seccion = Seccion.objects.get(pk=request.POST['seccion'])
 
+        # Validar que las horas de inicio y fin son correctas
+        errores = []
+        horarios_a_crear = []
         for dia, hora_inicio, hora_fin in zip(dias, horas_inicio, horas_fin):
-            # Crear el nuevo horario con las instancias correctas
-            nuevo_horario = Horario(
-                curso=curso,
-                profesor=profesor,
-                seccion=seccion,
-                dia_semana=dia,
-                hora_inicio=hora_inicio,
-                hora_fin=hora_fin
-            )
-            nuevo_horario.save()
+            if hora_inicio >= hora_fin:
+                errores.append(f"El horario de {dia} tiene una hora de inicio posterior o igual a la hora de fin.")
+            else:
+                nuevo_horario = Horario(
+                    curso=curso,
+                    profesor=profesor,
+                    seccion=seccion,
+                    dia_semana=dia,
+                    hora_inicio=hora_inicio,
+                    hora_fin=hora_fin
+                )
+                horarios_a_crear.append(nuevo_horario)
 
-        return redirect('listar_horarios')  # Redirigir a la lista de horarios
+        if errores:
+            return render(request, 'horarios/agregar_horario.html', {'errores': errores})
+
+        # Usar bulk_create para crear todos los horarios de una vez
+        Horario.objects.bulk_create(horarios_a_crear)
+        return redirect('listar_horarios')
 
     form = HorarioForm()
     return render(request, 'horarios/agregar_horario.html', {'form': form})
-
 
 @login_required
 @role_required('Administrador') 
@@ -54,22 +61,22 @@ def editar_horario(request, horario_id):
     # Obtener todos los horarios asociados al mismo curso y sección
     horarios = Horario.objects.filter(curso=horario.curso, seccion=horario.seccion)
 
+    # Obtener todos los profesores
+    profesores = Profesor.objects.all()
+
     if request.method == 'POST':
-        # Obtener las listas de horas y días del formulario
         dias = request.POST.getlist('dia_semana[]')
         horas_inicio = request.POST.getlist('hora_inicio[]')
         horas_fin = request.POST.getlist('hora_fin[]')
+        profesor = Profesor.objects.get(pk=request.POST['profesor'])  # Obtener el nuevo profesor
 
-        # Validar que las listas tengan la misma longitud
         if len(dias) == len(horas_inicio) == len(horas_fin):
-            # Limpiar los horarios existentes para evitar duplicados
             horarios.delete()
 
-            # Crear y guardar los nuevos horarios
             for dia, hora_inicio, hora_fin in zip(dias, horas_inicio, horas_fin):
                 nuevo_horario = Horario(
                     curso=horario.curso,
-                    profesor=horario.profesor,
+                    profesor=profesor,  # Asignar el nuevo profesor
                     seccion=horario.seccion,
                     dia_semana=dia,
                     hora_inicio=hora_inicio,
@@ -77,12 +84,16 @@ def editar_horario(request, horario_id):
                 )
                 nuevo_horario.save()
 
-            return redirect('listar_horarios')  # Redirigir a la lista de horarios
+            return redirect('listar_horarios')
     else:
-        # Si no es POST, simplemente muestra los horarios para editar
         form = HorarioForm(instance=horario)
 
-    return render(request, 'horarios/editar_horario.html', {'form': form, 'horarios': horarios})
+    return render(request, 'horarios/editar_horario.html', {
+        'form': form, 
+        'horarios': horarios, 
+        'profesores': profesores  # Pasar profesores al template
+    })
+
 
 
 
