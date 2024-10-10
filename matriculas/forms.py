@@ -1,3 +1,4 @@
+'''
 from django import forms
 from .models import Matricula, MatriculaCurso, Curso, Seccion
 from estudiantes.models import Estudiante  # Asegúrate de que el modelo Estudiante esté importado
@@ -24,3 +25,4 @@ class MatriculaCursoForm(forms.ModelForm):
     class Meta:
         model = MatriculaCurso
         fields = ['curso', 'seccion']  # Campos que usaremos para matricular a un curso
+'''
