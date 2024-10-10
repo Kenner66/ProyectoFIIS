@@ -4,29 +4,17 @@ from .models import Horario, Seccion
 class HorarioForm(forms.ModelForm):
     class Meta:
         model = Horario
-        fields = ['curso', 'profesor', 'seccion', 'dia_semana', 'hora_inicio', 'hora_fin']
-        widgets = {
-            'hora_inicio': forms.TimeInput(attrs={'type': 'time'}),
-            'hora_fin': forms.TimeInput(attrs={'type': 'time'}),
-        }
+        fields = ['profesor', 'seccion', 'dia_semana', 'hora_inicio', 'hora_fin']
 
     def clean(self):
         cleaned_data = super().clean()
-        curso = cleaned_data.get('curso')
-        seccion = cleaned_data.get('seccion')
-        hora_inicio = cleaned_data.get('hora_inicio')
-        hora_fin = cleaned_data.get('hora_fin')
+        hora_inicio = cleaned_data.get("hora_inicio")
+        hora_fin = cleaned_data.get("hora_fin")
 
-        # Validación para asegurarse de que la sección corresponde al curso seleccionado
-        if seccion and curso and seccion.curso != curso:
-            raise forms.ValidationError("La sección seleccionada no pertenece al curso elegido.")
-        
-        # Validación para asegurarse de que la hora de fin es posterior a la de inicio
-        if hora_inicio and hora_fin and hora_fin <= hora_inicio:
-            raise forms.ValidationError("La hora de fin debe ser posterior a la hora de inicio.")
+        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
+            raise forms.ValidationError("La hora de inicio no puede ser mayor o igual a la hora de fin.")
 
         return cleaned_data
-
 
 class SeccionForm(forms.ModelForm):
     class Meta:

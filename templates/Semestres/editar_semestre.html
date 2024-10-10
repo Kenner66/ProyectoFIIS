@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Editar Semestre{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/semestre_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="semestre-form-container">
+    <h2>Editar Semestre: {{ semestre }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-add">Guardar cambios</button>
+    </form>
+    <a href="{% url 'listar_semestres' %}" class="btn btn-back">Volver al listado</a>
+</div>
+{% endblock %}

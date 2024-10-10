@@ -1,70 +1,24 @@
 {% extends 'base.html' %}
 
-{% load static %}
-
 {% block title %}Editar Horario{% endblock %}
 
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
-{% endblock %}
-
 {% block content %}
-    <div class="registration-container">
-        <form class="registration-form" method="POST">
-            <h2>Editar Horario</h2>
-            {% csrf_token %}
-            
-            <!-- Mostrar curso solo una vez, pero profesor como un select para permitir cambios -->
-            <label for="curso">Curso:</label>
-            <input type="text" name="curso" value="{{ horarios.first.curso }}" readonly>
+<div class="registration-container">
+    <h2>Editar Horario</h2>
+    <form method="POST" id="horarioForm">
+        {% csrf_token %}
+        <div id="horarioContainer">
+            <div class="horarioEntry">
+                <label for="profesor">Profesor:</label>
+                {{ form.profesor }}
 
-            <label for="profesor">Profesor:</label>
-            <select name="profesor" required>
-                {% for profesor in profesores %}
-                <option value="{{ profesor.id }}" {% if profesor == horarios.first.profesor %}selected{% endif %}>
-                    {{ profesor.nombre }} {{ profesor.apellido }}
-                </option>
-                {% endfor %}
-            </select>
+                <label for="seccion">Sección:</label>
+                {{ form.seccion }}
 
-            <label for="seccion">Sección:</label>
-            <input type="text" name="seccion" value="{{ horarios.first.seccion }}" readonly>
-
-            <div id="horarioContainer">
-                {% for horario in horarios %}
-                <div class="horarioEntry">
-                    <label for="dia">Día:</label>
-                    <select name="dia_semana[]" required>
-                        <option value="Lunes" {% if horario.dia_semana == 'Lunes' %}selected{% endif %}>Lunes</option>
-                        <option value="Martes" {% if horario.dia_semana == 'Martes' %}selected{% endif %}>Martes</option>
-                        <option value="Miércoles" {% if horario.dia_semana == 'Miércoles' %}selected{% endif %}>Miércoles</option>
-                        <option value="Jueves" {% if horario.dia_semana == 'Jueves' %}selected{% endif %}>Jueves</option>
-                        <option value="Viernes" {% if horario.dia_semana == 'Viernes' %}selected{% endif %}>Viernes</option>
-                        <option value="Sábado" {% if horario.dia_semana == 'Sábado' %}selected{% endif %}>Sábado</option>
-                    </select>
-        
-                    <label for="hora_inicio">Hora Inicio:</label>
-                    <input type="time" name="hora_inicio[]" value="{{ horario.hora_inicio|time:'H:i' }}" required>
-        
-                    <label for="hora_fin">Hora Fin:</label>
-                    <input type="time" name="hora_fin[]" value="{{ horario.hora_fin|time:'H:i' }}" required>
-                </div>
-                {% endfor %}
-            </div>
-        
-            <button type="button" id="addHorario"> + Agregar otro día</button>
-            <button type="submit">Guardar</button>
-            <a href="{% url 'listar_horarios' %}" class="btn btn-secondary">Regresar a la lista de horarios</a>
-        </form>
-    </div>
-
-    <script>
-        document.getElementById('addHorario').addEventListener('click', function() {
-            var newEntry = document.createElement('div');
-            newEntry.classList.add('horarioEntry');
-            newEntry.innerHTML = `
+                {% for dia, hora_inicio, hora_fin in horario_data %}
                 <label for="dia">Día:</label>
                 <select name="dia_semana[]" required>
+                    <option value="{{ dia }}">{{ dia }}</option>
                     <option value="Lunes">Lunes</option>
                     <option value="Martes">Martes</option>
                     <option value="Miércoles">Miércoles</option>
@@ -74,30 +28,44 @@
                 </select>
 
                 <label for="hora_inicio">Hora Inicio:</label>
-                <input type="time" name="hora_inicio[]" required>
+                <input type="time" name="hora_inicio[]" value="{{ hora_inicio }}" required>
 
                 <label for="hora_fin">Hora Fin:</label>
-                <input type="time" name="hora_fin[]" required>
-            `;
-            document.getElementById('horarioContainer').appendChild(newEntry);
-        });
+                <input type="time" name="hora_fin[]" value="{{ hora_fin }}" required>
+                {% endfor %}
+            </div>
+        </div>
 
-        // Validación de las horas en el front-end
-        document.querySelector('form').addEventListener('submit', function(event) {
-            const horasInicio = document.querySelectorAll('input[name="hora_inicio[]"]');
-            const horasFin = document.querySelectorAll('input[name="hora_fin[]"]');
-            let error = false;
+        <button type="button" id="addHorario">+ Agregar otro día</button>
+        <button type="submit">Guardar cambios</button>
+        <a href="{% url 'listar_horarios' %}" class="btn btn-add">Regresar a la lista de horarios</a>
+    </form>
+</div>
 
-            horasInicio.forEach((inicio, index) => {
-                if (inicio.value >= horasFin[index].value) {
-                    alert('La hora de inicio debe ser anterior a la hora de fin.');
-                    error = true;
-                }
-            });
+<script>
+    document.getElementById('addHorario').addEventListener('click', function() {
+        var newEntry = document.createElement('div');
+        newEntry.classList.add('horarioEntry');
 
-            if (error) {
-                event.preventDefault();
-            }
-        });
-    </script>
+        newEntry.innerHTML = `
+            <label for="dia">Día:</label>
+            <select name="dia_semana[]" required>
+                <option value="Lunes">Lunes</option>
+                <option value="Martes">Martes</option>
+                <option value="Miércoles">Miércoles</option>
+                <option value="Jueves">Jueves</option>
+                <option value="Viernes">Viernes</option>
+                <option value="Sábado">Sábado</option>
+            </select>
+
+            <label for="hora_inicio">Hora Inicio:</label>
+            <input type="time" name="hora_inicio[]" required>
+
+            <label for="hora_fin">Hora Fin:</label>
+            <input type="time" name="hora_fin[]" required>
+        `;
+
+        document.getElementById('horarioContainer').appendChild(newEntry);
+    });
+</script>
 {% endblock %}

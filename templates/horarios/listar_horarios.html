@@ -16,7 +16,6 @@
         <table class="student-table">
             <thead>
                 <tr>
-                    <th>Curso</th>
                     <th>Profesor</th>
                     <td>Seccion</td>
                     <th>Día</th>
@@ -28,7 +27,6 @@
             <tbody>
                 {% for horario in horarios %}
                 <tr>
-                    <td>{{ horario.curso.nombre }}</td>
                     <td>{{ horario.profesor.nombre }} {{ horario.profesor.apellido }}</td>
                     <td>{{ horario.seccion }}</td>
                     <td>{{ horario.dia_semana }}</td>
