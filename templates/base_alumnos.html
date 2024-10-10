@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image" href="/static/assets/favicon.ico"/>
+    <link  href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+    
+    <title>Sistema Alumno UNFV</title>
+</head>
+<body>
+    <!--Inicio de Barra Lateral Izquierda-->
+    <div class="container">
+        <aside>
+            <div class="top">
+                <div class="logo">
+                    <img src="/static/assets/logo_base.png" alt="logo">
+                </div>
+                <div class="close" id="close-btn">
+                    <span class="material-icons-sharp">close</span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <a href="{% url 'home_estudiante' %}" class="active">
+                    <span class="material-icons-sharp">grid_view</span>
+                    <h3>Inicio</h3>
+                </a> 
+                <a href="{% url 'signout' %}">
+                    <span class="material-icons-sharp">logout</span>
+                    <h3>Cerrar Sesión</h3>
+                </a>
+            </div>
+        </aside>
+        <!--Fin de Barra Lateral Izquierda-->
+        <!--Inicio Principal Administrador-->
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+        <!--Fin Principal Administrador-->
+        <!--Inicio de Barra Lateral Derecha-->
+        <div class="right">
+            <div class="top">
+                <button id="menu-btn">
+                    <span class="material-icons-sharp">menu</span>
+                </button>
+                <div class="profile">
+                    <div class="info">
+                        <p>Hola, <b>{{ request.user.username }}</b></p>
+                        <small class="text-muted">Administrador</small>
+                    </div>
+
+                    <div class="profile-photo">
+                        <img src="/static/assets/perfil_admin.png" alt="perfil_admin">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--Fin de Barra Lateral Derecha-->
+    </div>
+    <script src="{% static 'js/base.js' %}"></script>
+</body>
+</html>
+

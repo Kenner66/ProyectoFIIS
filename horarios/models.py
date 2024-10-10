@@ -1,12 +1,14 @@
 from django.db import models
 from cursos.models import Curso
 from profesores.models import Profesor 
+from semestre.models import Semestre
 # Create your models here.
 class Seccion(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=10)
     cupos_totales = models.IntegerField()
-    semestre = models.CharField(max_length=10)  # Añadir campo de semestre
+    semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE, related_name='secciones')
+    #semestre = models.CharField(max_length=10)  # Añadir campo de semestre
 
     def __str__(self):
         return f"{self.curso.nombre} - Sección {self.nombre}"

@@ -15,7 +15,28 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Guardar Cambios</button>
-            <button type="submit_2"><a href="{% url 'listar_cursos' %}">Volver a la lista de cursos</a></button>
-  </form>
-  </div>
+            <button type="button"><a href="{% url 'listar_cursos' %}">Volver a la lista de cursos</a></button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cicloField = document.querySelector('#id_ciclo');
+            const prerequisitosField = document.querySelector('#id_pre_requisitos');
+            const prerequisitosWrapper = document.getElementById('id_pre_requisitos_wrapper');
+
+            function togglePrerequisitos() {
+                if (cicloField.value > 1) {
+                    prerequisitosField.disabled = false;
+                    prerequisitosWrapper.style.display = 'block';  // Mostrar prerequisitos si el ciclo es > 1
+                } else {
+                    prerequisitosField.disabled = true;
+                    prerequisitosWrapper.style.display = 'none';  // Ocultar prerequisitos si es ciclo 1
+                }
+            }
+
+            cicloField.addEventListener('change', togglePrerequisitos);
+            togglePrerequisitos();  // Llamada inicial para establecer el estado al cargar la página
+        });
+    </script>
 {% endblock %}

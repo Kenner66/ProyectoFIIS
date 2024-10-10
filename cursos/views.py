@@ -4,7 +4,7 @@ from estudiantes.models import Estudiante
 from .forms import CursoForm,HistorialNotasForm
 from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required 
-
+from django.core.exceptions import ValidationError
 @login_required
 @role_required('Administrador')
 def listar_cursos(request):
@@ -17,10 +17,11 @@ def agregar_curso(request):
     if request.method == 'POST':
         form = CursoForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('listar_cursos')
+            form.save()  # Llama al método save del formulario
+            return redirect('listar_cursos')  # Redirigir después de guardar
     else:
         form = CursoForm()
+
     return render(request, 'cursos/agregar_curso.html', {'form': form})
 
 @login_required
@@ -35,7 +36,6 @@ def editar_curso(request, pk):
     else:
         form = CursoForm(instance=curso)
     return render(request, 'cursos/editar_curso.html', {'form': form})
-
 
 @login_required
 @role_required('Administrador')

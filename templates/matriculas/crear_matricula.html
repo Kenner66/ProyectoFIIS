@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Crear Matrícula</h2>
+
+<form method="POST" id="crear-matricula-form">
+    {% csrf_token %}
+    {{ form.semestre.label_tag }} {{ form.semestre }}  <!-- Selección del semestre -->
+    
+    <!-- Campo para ingresar el código del estudiante -->
+    {{ form.codigo_estudiante.label_tag }} {{ form.codigo_estudiante }}
+    
+    <button type="button" id="buscar-estudiante">Buscar</button>
+
+    <!-- Información del estudiante -->
+    <div id="info-estudiante" style="display:none;">
+        <h3>Información del Estudiante</h3>
+        <p id="nombre-estudiante"></p>
+    </div>
+
+    <!-- Lista de cursos disponibles -->
+    <div id="cursos-disponibles" style="display:none;">
+        <h3>Cursos Disponibles</h3>
+        <div id="lista-cursos"></div>
+    </div>
+
+    <!-- Lista de cursos seleccionados -->
+    <div id="cursos-seleccionados" style="display:none;">
+        <h3>Cursos Seleccionados</h3>
+        <ul id="lista-cursos-seleccionados"></ul>
+    </div>
+
+    <!-- Botón para registrar la matrícula -->
+    <button type="submit" id="registrar-matricula" style="display:none;">Registrar Matrícula</button>
+</form>
+
+<script>
+    let cursosSeleccionados = [];
+
+    document.getElementById('buscar-estudiante').addEventListener('click', function() {
+    var codigoEstudiante = document.getElementById('id_codigo_estudiante').value;
+
+    fetch("{% url 'cargar_cursos_disponibles' %}?codigo_estudiante=" + codigoEstudiante)
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            // Mostrar nombre del estudiante
+            document.getElementById('info-estudiante').style.display = 'block';
+            document.getElementById('nombre-estudiante').innerText = data.nombre_estudiante;
+
+            // Mostrar los cursos disponibles
+            var cursosHTML = '';
+            data.cursos.forEach(curso => {
+                cursosHTML += `
+                    <div>
+                        <span>${curso.nombre}</span>
+                        <label for="seccion_${curso.id}">Sección:</label>
+                        <select id="seccion_${curso.id}">
+                            ${curso.secciones.map(seccion => `<option value="${seccion.id}">${seccion.nombre}</option>`).join('')}
+                        </select>
+                        <button type="button" onclick="agregarCurso(${curso.id}, '${curso.nombre}')">Añadir</button>
+                    </div>
+                `;
+            });
+            document.getElementById('lista-cursos').innerHTML = cursosHTML;
+            document.getElementById('cursos-disponibles').style.display = 'block';
+        }
+    })
+    .catch(error => console.error('Error al buscar el estudiante:', error));
+});
+
+    function agregarCurso(cursoId, cursoNombre) {
+        // Verificar si el curso ya está seleccionado
+        if (!cursosSeleccionados.some(curso => curso.id === cursoId)) {
+            // Obtener la sección seleccionada
+            const seccionId = document.getElementById(`seccion_${cursoId}`).value;
+
+            // Agregar el curso seleccionado a la lista
+            cursosSeleccionados.push({ id: cursoId, nombre: cursoNombre, seccion: seccionId });
+
+            // Mostrar la lista de cursos seleccionados
+            document.getElementById('cursos-seleccionados').style.display = 'block';
+            const listaCursosSeleccionados = document.getElementById('lista-cursos-seleccionados');
+            listaCursosSeleccionados.innerHTML = '';  // Limpiar la lista
+            cursosSeleccionados.forEach(curso => {
+                const nuevoCurso = document.createElement('li');
+                nuevoCurso.innerText = `${curso.nombre} - Sección: ${curso.seccion}`;  // Muestra el nombre del curso y la sección
+                listaCursosSeleccionados.appendChild(nuevoCurso);
+            });
+
+            // Mostrar el botón de registrar matrícula
+            document.getElementById('registrar-matricula').style.display = 'inline-block';
+        } else {
+            alert('Este curso ya está seleccionado.');
+        }
+    }
+
+    document.getElementById('crear-matricula-form').addEventListener('submit', function (event) {
+        // Evitar el comportamiento por defecto del envío del formulario
+        event.preventDefault();
+
+        // Verifica que haya cursos seleccionados antes de enviar el formulario
+        if (cursosSeleccionados.length === 0) {
+            alert('Por favor, seleccione al menos un curso.');
+            return;  // Detiene el envío si no hay cursos seleccionados
+        }
+
+        const form = document.getElementById('crear-matricula-form');
+        
+        // Crear un campo oculto para enviar los cursos seleccionados al servidor
+        const inputCursos = document.createElement('input');
+        inputCursos.type = 'hidden';
+        inputCursos.name = 'cursos_seleccionados';  // Asegúrate de que este nombre coincida con el esperado en tu vista
+        inputCursos.value = JSON.stringify(cursosSeleccionados);
+        form.appendChild(inputCursos);
+
+        form.submit();  // Enviar el formulario
+    });
+</script>
+
+{% endblock %}
+

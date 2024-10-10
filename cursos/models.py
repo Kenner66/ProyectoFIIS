@@ -2,22 +2,25 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from estudiantes.models import Estudiante 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here.
+from django.db import models
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 class Curso(models.Model):
     codigo = models.CharField(max_length=10, unique=True)  # Campo único
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(null=True, blank=True)
     creditos = models.IntegerField()
-    ciclo = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)]
-    )
+    ciclo = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
     pre_requisitos = models.ManyToManyField('self', symmetrical=False, related_name='requisitos_para', blank=True)
-    def clean(self):
-        # Si el curso pertenece al ciclo 1, no puede tener prerrequisitos
-        if self.ciclo == 1 and self.pre_requisitos.exists():
-            raise ValidationError("Los cursos del ciclo 1 no pueden tener prerrequisitos.")
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre} (Ciclo {self.ciclo})"
+
+    
 
 class HistorialNotas(models.Model):
     estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name='historial_notas')

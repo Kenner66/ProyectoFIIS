@@ -1,6 +1,6 @@
+
 from django.urls import path
 from . import views
-
 urlpatterns = [
     path('', views.listar_horarios, name='listar_horarios'),
     path('agregar/', views.agregar_horario, name='agregar_horario'),
