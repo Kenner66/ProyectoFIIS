@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2>Lista de Matrículas</h2>
-<a href="{% url 'matricular_estudiante' %}">Agregar Matrícula</a>
+<a href="{% url 'crear_matricula' %}">Agregar Matrícula</a>
 <table>
     <thead>
         <tr>
@@ -22,7 +22,7 @@
                 <td>{{ matricula.curso.nombre }}</td>
                 <td>{{ matricula.seccion }}</td>
                 <td>
-                    <a href="{% url 'editar_matricula' matricula.id %}">Editar</a>
+                    <!--<a href="{% url 'editar_matricula' matricula.id %}">Editar</a>-->
                 </td>
             </tr>
             {% endfor %}

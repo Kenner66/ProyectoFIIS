@@ -1,28 +1,28 @@
-'''
+
 from django import forms
-from .models import Matricula, MatriculaCurso, Curso, Seccion
+from .models import Matricula, MatriculaCurso,Seccion
 from estudiantes.models import Estudiante  # Asegúrate de que el modelo Estudiante esté importado
 
 class MatriculaForm(forms.ModelForm):
-    estudiante = forms.ModelChoiceField(
-        queryset=Estudiante.objects.all(),
-        required=True,
-        label="Selecciona el Estudiante"
+    codigo_estudiante = forms.CharField(
+        max_length=10,
+        label='Código del Estudiante',
+        required=True
     )
+
     
-    cursos = forms.ModelMultipleChoiceField(
-        queryset=Curso.objects.all(),
+    secciones = forms.ModelMultipleChoiceField(
+        queryset=Seccion.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=True,
-        label="Selecciona los Cursos"
+        label="Selecciona las Secciones"
     )
     
     class Meta:
         model = Matricula
-        fields = ['estudiante', 'semestre']  # Ahora incluye el estudiante y el semestre
+        fields = ['estudiante', 'semestre']  # Estudiante y semestre están bien
 
 class MatriculaCursoForm(forms.ModelForm):
     class Meta:
         model = MatriculaCurso
-        fields = ['curso', 'seccion']  # Campos que usaremos para matricular a un curso
-'''
+        fields = ['seccion']

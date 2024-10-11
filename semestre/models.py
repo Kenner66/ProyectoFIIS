@@ -1,5 +1,3 @@
-from django.db import models
-
 # Create your models here.
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -31,7 +29,4 @@ class Semestre(models.Model):
             cursos_disponibles = Curso.objects.all()  # O cursos de ciclos impares según la lógica
         return cursos_disponibles
     def save(self, *args, **kwargs):
-        if self.estado:
-            # Verifica si ya hay otro semestre activo
-            Semestre.objects.filter(estado=True).update(estado=False)
         super().save(*args, **kwargs)
