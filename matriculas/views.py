@@ -75,6 +75,12 @@ def cargar_secciones(request, semestre_id):
     return JsonResponse(list(secciones), safe=False)
 
 
+def is_course_available_in_current_semester(curso, semestre_actual):
+    if not semestre_actual:
+        return False  # Si no hay semestre activo, no se puede matricular
+    # Verificar si el curso pertenece al ciclo correcto para el semestre
+    return (semestre_actual.periodo == 'I' and curso.ciclo % 2 == 1) or \
+           (semestre_actual.periodo == 'II' and curso.ciclo % 2 == 0)
 @login_required
 @role_required('Administrador')
 def validar_seccion(request, codigo_estudiante, seccion_id):
@@ -90,27 +96,34 @@ def validar_seccion(request, codigo_estudiante, seccion_id):
         if historial and historial.nota >= 11:  # Si ya aprobó el curso
             return JsonResponse({'error': f'El estudiante ya aprobó el curso {curso.nombre}.'})
 
-        # Si el curso es de ciclo 1, no tiene prerrequisitos
-        if curso.ciclo == 1:
-            return JsonResponse({
-                'success': 'Validación exitosa, puede añadir el curso.',
-                'curso_nombre': curso.nombre,
-                'seccion_nombre': seccion.nombre
-            })
+        # Obtener la lista de secciones seleccionadas de la sesión
+        secciones_seleccionadas_ids = request.session.get('secciones_seleccionadas', [])
+        secciones_seleccionadas = Seccion.objects.filter(id__in=secciones_seleccionadas_ids)
 
         # Validar prerrequisitos específicos del curso
-        prerrequisitos = curso.pre_requisitos.all()  # Asume que pre_requisitos es ManyToManyField
+        prerrequisitos = curso.pre_requisitos.all()
         for prerequisito in prerrequisitos:
+            # Revisar si el prerrequisito ya fue aprobado en el historial académico
             historial_prerrequisito = HistorialNotas.objects.filter(estudiante=estudiante, curso=prerequisito).first()
-            
-            # Validar si ya aprobó el prerrequisito
-            if historial_prerrequisito:
-                if historial_prerrequisito.nota < 11:
-                    return JsonResponse({'error': f'El estudiante no ha aprobado el prerrequisito {prerequisito.nombre}.'})
+
+            if historial_prerrequisito and historial_prerrequisito.nota >= 11:
+                continue  # Si ya aprobó el prerrequisito, seguimos con la validación del siguiente
+
+            # Si no ha aprobado el prerrequisito, validar si lo seleccionó para el semestre actual o semestre anterior
+            seccion_prerrequisito = secciones_seleccionadas.filter(curso=prerequisito).first()
+
+            # Aquí añadimos la validación si el curso pertenece al semestre anterior
+            if not seccion_prerrequisito:
+                # Si el curso es del semestre II y el prerrequisito está siendo cursado en el semestre I, lo permitimos
+                if curso.ciclo % 2 == 0:  # Si es de ciclo par (ejemplo: semestre II)
+                    seccion_prerrequisito_anterior = Seccion.objects.filter(curso=prerequisito, curso__ciclo=curso.ciclo-1).first()
+                    if seccion_prerrequisito_anterior:
+                        continue  # Si el prerrequisito está en el semestre anterior, permitimos la matriculación
+
+                return JsonResponse({'error': f'El estudiante no ha aprobado ni seleccionado el prerrequisito {prerequisito.nombre}.'})
 
         # Validar si el estudiante ya tiene esta sección del curso en su lista de secciones seleccionadas
-        secciones_seleccionadas_ids = request.session.get('secciones_seleccionadas', [])
-        secciones_existentes = Seccion.objects.filter(id__in=secciones_seleccionadas_ids, curso=curso)
+        secciones_existentes = secciones_seleccionadas.filter(curso=curso)
 
         if secciones_existentes.exists():
             return JsonResponse({'error': f'El estudiante ya ha añadido una sección del curso {curso.nombre}.'})

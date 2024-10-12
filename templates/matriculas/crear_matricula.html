@@ -110,8 +110,7 @@ function añadirSeccion(seccionId) {
                     // Crear un nuevo elemento para la sección añadida
                     const nuevoElemento = document.createElement('div');
                     nuevoElemento.innerHTML = `
-                        <p>Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} 
-                        <button onclick="removerSeccion(${seccionId})">Remover</button></p>`;
+                        <p>Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} `;
                     
                     // Añadir el nuevo elemento a la lista de secciones seleccionadas
                     seccionLista.appendChild(nuevoElemento);

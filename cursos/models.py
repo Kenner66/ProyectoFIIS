@@ -20,6 +20,7 @@ class Curso(models.Model):
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre} (Ciclo {self.ciclo})"
+    
 
     
 
