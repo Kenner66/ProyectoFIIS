@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from .forms import UsuarioCreationForm
 from .decorators import role_required 
+from estudiantes.models import Estudiante
 
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your view
@@ -19,7 +20,19 @@ def home_admin(request):
 @login_required
 @role_required('Estudiante')
 def home_estudiante(request):
-    return render(request, "home_estudiante.html")  # Home para el estudiante
+    # Asegúrate de que el usuario esté autenticado
+    if request.user.is_authenticated:
+        try:
+            # Obtiene el estudiante asociado al usuario actual
+            estudiante = Estudiante.objects.get(usuario=request.user)
+            info_personal = estudiante.informacionpersonal  # Accede a la información personal
+        except Estudiante.DoesNotExist:
+            info_personal = None
+        
+        return render(request, 'home_estudiante.html', {'info_personal': info_personal})
+    else:
+        # Redirigir a la página de inicio de sesión o a donde desees
+        return redirect('login')  # Home para el estudiante
 
 def signin(request):
     if request.user.is_authenticated:

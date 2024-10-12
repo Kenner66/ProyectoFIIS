@@ -1,15 +1,15 @@
-{% load static %}
+{% load static %} 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image" href="/static/assets/favicon.ico"/>
-    <link  href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
     
-    <title>Sistema Alumno UNFV</title>
+    <title>Sistema Estudiantes UNFV</title>
 </head>
 <body>
     <!--Inicio de Barra Lateral Izquierda-->
@@ -25,23 +25,45 @@
             </div>
 
             <div class="sidebar">
-                <a href="{% url 'home_estudiante' %}" class="active">
+                <a href="#" class="active">  <!-- Cambia '#' por la URL correspondiente -->
                     <span class="material-icons-sharp">grid_view</span>
                     <h3>Inicio</h3>
-                </a> 
-                <a href="{% url 'signout' %}">
+                </a>
+                <a href="#">
+                    <span class="material-icons-sharp">person_outline</span>
+                    <h3>Perfil Estudiante</h3>
+                </a>
+                <a href="#">
+                    <span class="material-icons-sharp">menu_book</span>
+                    <h3>Cursos</h3>
+                </a>
+                <a href="#">
+                    <span class="material-icons-sharp">assignment_turned_in</span>
+                    <h3>Historial de Notas</h3>
+                </a>
+                <a href="#">
+                    <span class="material-icons-sharp">badge</span>
+                    <h3>Asesorías</h3>
+                </a>
+                <a href="#">
+                    <span class="material-icons-sharp">calendar_month</span>
+                    <h3>Horarios</h3>
+                </a>
+                <a href="{% url 'signout' %}">  <!-- Aquí estaba mal cerrado el tag -->
                     <span class="material-icons-sharp">logout</span>
-                    <h3>Cerrar Sesión</h3>
+                    <h3>Sign Out</h3>
                 </a>
             </div>
         </aside>
         <!--Fin de Barra Lateral Izquierda-->
-        <!--Inicio Principal Administrador-->
+        
+        <!--Inicio Principal Estudiantes-->
         <main>
             {% block content %}
             {% endblock %}
         </main>
-        <!--Fin Principal Administrador-->
+        <!--Fin Principal Estudiantes-->
+        
         <!--Inicio de Barra Lateral Derecha-->
         <div class="right">
             <div class="top">
@@ -50,20 +72,17 @@
                 </button>
                 <div class="profile">
                     <div class="info">
-                        <p>Hola, <b>{{ request.user.username }}</b></p>
-                        <small class="text-muted">Administrador</small>
-                    </div>
-
-                    <div class="profile-photo">
-                        <img src="/static/assets/perfil_admin.png" alt="perfil_admin">
+                        {% if request.user.estudiante.informacionpersonal %}
+                            <p>Hola, <b>{{ request.user.estudiante.informacionpersonal.nombre }} {{ request.user.estudiante.informacionpersonal.apellido }}</b></p>
+                        {% else %}
+                            <p>Hola, <b>{{ request.user.username }}</b></p>  <!-- Fallback en caso de que no haya información personal -->
+                        {% endif %}
+                        <small class="text-muted">Estudiante</small>
                     </div>
                 </div>
-
-            </div>
         </div>
         <!--Fin de Barra Lateral Derecha-->
     </div>
-    <script src="{% static 'js/base.js' %}"></script>
+    
 </body>
 </html>
-
