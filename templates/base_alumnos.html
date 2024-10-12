@@ -25,11 +25,11 @@
             </div>
 
             <div class="sidebar">
-                <a href="#" class="active">  <!-- Cambia '#' por la URL correspondiente -->
+                <a href="{% url 'home_estudiante' %}" class="active">  <!-- Cambia '#' por la URL correspondiente -->
                     <span class="material-icons-sharp">grid_view</span>
                     <h3>Inicio</h3>
                 </a>
-                <a href="#">
+                <a href="{% url 'perfil_estudiante' %}">
                     <span class="material-icons-sharp">person_outline</span>
                     <h3>Perfil Estudiante</h3>
                 </a>
@@ -37,7 +37,7 @@
                     <span class="material-icons-sharp">menu_book</span>
                     <h3>Cursos</h3>
                 </a>
-                <a href="#">
+                <a href="{% url 'historial_notas' %}">
                     <span class="material-icons-sharp">assignment_turned_in</span>
                     <h3>Historial de Notas</h3>
                 </a>

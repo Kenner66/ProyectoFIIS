@@ -1,0 +1,9 @@
+{% extends 'base_alumnos.html' %}
+
+{% block content %}
+<h2>Perfil de {{ informacion_personal.nombre }} {{ informacion_personal.apellido }}</h2>
+<p>DNI: {{ informacion_personal.dni }}</p>
+<p>Fecha de Nacimiento: {{ informacion_personal.fecha_nacimiento }}</p>
+<p>Código: {{ estudiante.codigo }}</p>
+<p>Carrera: {{ estudiante.carrera }}</p>
+{% endblock %}

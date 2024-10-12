@@ -1,0 +1,23 @@
+{% extends 'base_alumnos.html' %}
+
+{% block content %}
+<h2>Historial de Notas</h2>
+<table>
+    <tr>
+        <th>Curso</th>
+        <th>Nota</th>
+        <th>Semestre</th>
+    </tr>
+    {% for nota in historial %}
+        <tr>
+            <td>{{ nota.curso.nombre }}</td>
+            <td>{{ nota.nota }}</td>
+            <td>{{ nota.semestre }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="3">No hay notas registradas.</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
