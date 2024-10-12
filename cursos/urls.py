@@ -9,3 +9,4 @@ urlpatterns = [
     path('historial/<int:estudiante_id>/', views.historial_notas_estudiante, name='historial_notas_estudiante'),
     path('historial/<int:estudiante_id>/agregar_nota/', views.agregar_nota, name='agregar_nota'),
 ]
+

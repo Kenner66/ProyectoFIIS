@@ -4,7 +4,6 @@ from django import forms
 from .models import Curso
 from django.core.exceptions import ValidationError
 
-
 class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
@@ -40,6 +39,3 @@ class HistorialNotasForm(forms.ModelForm):
     class Meta:
         model = HistorialNotas
         fields = ['curso', 'semestre', 'nota']
-
-
-
