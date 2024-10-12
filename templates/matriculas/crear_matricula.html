@@ -36,6 +36,13 @@
     <h4>Secciones Añadidas</h4>
     <!-- Aquí se mostrarán las secciones seleccionadas -->
 </div>
+<form id="form-matricula" method="POST" action="{% url 'guardar_matricula' %}">
+    {% csrf_token %}
+    <input type="hidden" name="codigo_estudiante" id="codigo_estudiante" value="{{ estudiante.codigo }}">
+    <input type="hidden" name="semestre_id" id="semestre_id">
+
+    <button type="button" onclick="guardarMatricula()">Guardar Matrícula</button>
+</form>
 <script>
     document.getElementById('cargar-estudiante-form').addEventListener('submit', function(event) {
         event.preventDefault(); // Evita el envío del formulario
@@ -109,8 +116,9 @@ function añadirSeccion(seccionId) {
 
                     // Crear un nuevo elemento para la sección añadida
                     const nuevoElemento = document.createElement('div');
+                    nuevoElemento.setAttribute('data-seccion-id', seccionId); // Agregar el data-seccion-id
                     nuevoElemento.innerHTML = `
-                        <p>Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} `;
+                    <p>Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} `;
                     
                     // Añadir el nuevo elemento a la lista de secciones seleccionadas
                     seccionLista.appendChild(nuevoElemento);
@@ -119,6 +127,38 @@ function añadirSeccion(seccionId) {
         })
         .catch(error => console.error('Error al validar la sección:', error));
 }
+function guardarMatricula() {
+    const codigoEstudiante = document.getElementById('codigo_estudiante').value;
+    const semestreId = document.getElementById('semestre-select').value;
+    
+    // Obtener las secciones seleccionadas
+    const seccionesSeleccionadas = Array.from(document.querySelectorAll('#secciones-seleccionadas div')).map(div => div.dataset.seccionId);
 
+    // Crear un FormData para enviar los datos
+    const formData = new FormData();
+    formData.append('codigo_estudiante', codigoEstudiante);
+    formData.append('semestre_id', semestreId);
+    
+    // Añadir todas las secciones seleccionadas al FormData
+    seccionesSeleccionadas.forEach(seccionId => formData.append('secciones_seleccionadas[]', seccionId));
+
+    // Enviar los datos al servidor usando fetch
+    fetch('/matriculas/guardar_matricula/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.success);
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => console.error('Error al guardar la matrícula:', error));
+}
 </script>
 {% endblock %}

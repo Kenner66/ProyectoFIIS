@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalles de Matrícula{% endblock %}
+
+{% block content %}
+<h2>Detalles de la Matrícula</h2>
+<p><strong>Código del Estudiante:</strong> {{ estudiante_codigo }}</p>
+<p><strong>Nombre del Estudiante:</strong> {{ estudiante_nombre }}</p>
+<!--<p><strong>Semestre:</strong> {{ matricula.semestre.año }} - {{ matricula.semestre.periodo }}</p>-->
+
+<h3>Cursos Matriculados</h3>
+<ul>
+    {% for curso in cursos_matriculados %}
+    <li>{{ curso.seccion.curso.nombre }} - {{ curso.seccion.nombre }}</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'listar_matriculas' %}">Volver a la lista de matrículas</a>
+{% endblock %}

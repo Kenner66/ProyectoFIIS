@@ -8,9 +8,9 @@
 <table>
     <thead>
         <tr>
+
             <th>Estudiante</th>
-            <th>Curso</th>
-            <th>Sección</th>
+           <!-- <th>Semestre</th>-->
             <th>Acciones</th>
         </tr>
     </thead>
@@ -19,18 +19,25 @@
             {% for matricula in matriculas %}
             <tr>
                 <td>{{ estudiante }}</td>
-                <td>{{ matricula.curso.nombre }}</td>
-                <td>{{ matricula.seccion }}</td>
+                <!--<td>{{ matricula.semestre.año }} - {{ matricula.semestre.periodo }}</td>-->
                 <td>
-                    <!--<a href="{% url 'editar_matricula' matricula.id %}">Editar</a>-->
+                    <a href="{% url 'ver_matricula' matricula.id %}">Ver Matrícula</a>
+                    <a href="{% url 'eliminar_matricula' matricula.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta matrícula?');">Eliminar</a>
                 </td>
             </tr>
             {% endfor %}
         {% empty %}
             <tr>
-                <td colspan="4">No hay matrículas disponibles.</td>
+                <td colspan="3">No hay matrículas disponibles.</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}

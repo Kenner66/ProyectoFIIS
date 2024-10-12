@@ -20,12 +20,61 @@ from .models import Matricula, Seccion, Semestre
 from cursos.models import HistorialNotas
 from estudiantes.models import Estudiante
 from django.http import JsonResponse
-
+'''
 @login_required
 @role_required('Administrador')
 def listar_matriculas(request):
     matriculas = Matricula.objects.select_related('estudiante').all()
     return render(request, 'matriculas/listar_matriculas.html', {'matriculas': matriculas})
+'''
+def ver_matricula(request, matricula_id):
+    # Obtener la matrícula y los cursos relacionados
+    matricula = get_object_or_404(Matricula, id=matricula_id)
+    cursos_matriculados = MatriculaCurso.objects.filter(matricula=matricula)
+    
+    # Obtener la información del estudiante
+    estudiante = matricula.estudiante
+    info_personal = estudiante.informacionpersonal
+    
+    context = {
+        'matricula': matricula,
+        'cursos_matriculados': cursos_matriculados,
+        'estudiante_codigo': estudiante.codigo,
+        'estudiante_nombre': f"{info_personal.nombre} {info_personal.apellido}",
+    }
+    
+    return render(request, 'matriculas/ver_matricula.html', context)
+
+def eliminar_matricula(request, matricula_id):
+    matricula = get_object_or_404(Matricula, id=matricula_id)
+
+    # Eliminar la matrícula y los cursos asociados
+    matricula.delete()
+
+    # Añadir un mensaje de éxito
+    messages.success(request, f"La matrícula de {matricula.estudiante.usuario.username} ha sido eliminada correctamente.")
+def listar_matriculas(request):
+    # Obtener todas las matrículas con los datos de estudiante y cursos
+    matriculas = Matricula.objects.select_related('estudiante').prefetch_related('matriculacurso_set')
+    
+    # Crear un diccionario donde agrupamos las matrículas por estudiante
+    matriculas_info = {}
+    
+    for matricula in matriculas:
+        estudiante = matricula.estudiante
+        info_personal = estudiante.informacionpersonal
+        
+        estudiante_nombre = f"{info_personal.nombre} {info_personal.apellido}"
+        if estudiante_nombre not in matriculas_info:
+            matriculas_info[estudiante_nombre] = []
+        matriculas_info[estudiante_nombre].append(matricula)
+    
+    context = {
+        'matriculas_info': matriculas_info
+    }
+    
+    return render(request, 'matriculas/listar_matriculas.html', context)
+
 
 @login_required 
 @role_required('Administrador')
@@ -81,6 +130,7 @@ def is_course_available_in_current_semester(curso, semestre_actual):
     # Verificar si el curso pertenece al ciclo correcto para el semestre
     return (semestre_actual.periodo == 'I' and curso.ciclo % 2 == 1) or \
            (semestre_actual.periodo == 'II' and curso.ciclo % 2 == 0)
+
 @login_required
 @role_required('Administrador')
 def validar_seccion(request, codigo_estudiante, seccion_id):
@@ -139,3 +189,38 @@ def validar_seccion(request, codigo_estudiante, seccion_id):
         return JsonResponse({'error': 'Estudiante no encontrado.'})
     except Seccion.DoesNotExist:
         return JsonResponse({'error': 'Sección no encontrada.'})
+
+@login_required
+@role_required('Estudiante')
+def guardar_matricula(request):
+    if request.method == 'POST':
+        codigo_estudiante = request.POST.get('codigo_estudiante')
+        semestre_id = request.POST.get('semestre_id')
+        secciones_seleccionadas_ids = request.POST.getlist('secciones_seleccionadas[]')
+
+        try:
+            # Obtener el estudiante y el semestre actual
+            estudiante = Estudiante.objects.get(codigo=codigo_estudiante)
+            semestre = Semestre.objects.get(id=semestre_id)
+
+            # Buscar o crear la matrícula para el estudiante en el semestre actual
+            matricula, created = Matricula.objects.get_or_create(estudiante=estudiante, semestre=semestre)
+
+            # Guardar las secciones seleccionadas en la matrícula
+            for seccion_id in secciones_seleccionadas_ids:
+                seccion = Seccion.objects.get(id=seccion_id)
+
+                # Verificar si ya existe la matrícula de ese curso y sección
+                if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
+                    MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
+            
+            return JsonResponse({'success': 'Matrícula guardada correctamente.'})
+
+        except Estudiante.DoesNotExist:
+            return JsonResponse({'error': 'Estudiante no encontrado.'})
+        except Semestre.DoesNotExist:
+            return JsonResponse({'error': 'Semestre no encontrado.'})
+        except Seccion.DoesNotExist:
+            return JsonResponse({'error': 'Una de las secciones seleccionadas no existe.'})
+
+    return JsonResponse({'error': 'Método no permitido.'})
