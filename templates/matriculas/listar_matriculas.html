@@ -22,7 +22,10 @@
                 <!--<td>{{ matricula.semestre.año }} - {{ matricula.semestre.periodo }}</td>-->
                 <td>
                     <a href="{% url 'ver_matricula' matricula.id %}">Ver Matrícula</a>
-                    <a href="{% url 'eliminar_matricula' matricula.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta matrícula?');">Eliminar</a>
+                    <form method="POST" action="{% url 'eliminar_matricula' matricula.id %}">
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta matrícula?')">Eliminar</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}

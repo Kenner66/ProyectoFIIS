@@ -1,25 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import MatriculaForm, MatriculaCursoForm
 from .models import Matricula, MatriculaCurso,Seccion,Semestre  
-from cursos.models import HistorialNotas,Curso
-from .forms import MatriculaForm
-from estudiantes.models import Estudiante,InformacionPersonal
-from django.forms import formset_factory
+from cursos.models import HistorialNotas
+from estudiantes.models import Estudiante
 from usuarios.decorators import role_required 
-from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseNotFound
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Matricula, Seccion, Semestre
 from cursos.models import HistorialNotas
-from estudiantes.models import Estudiante
-from django.http import JsonResponse
+from django.http import HttpResponse
+
 '''
 @login_required
 @role_required('Administrador')
@@ -47,34 +41,31 @@ def ver_matricula(request, matricula_id):
 
 def eliminar_matricula(request, matricula_id):
     matricula = get_object_or_404(Matricula, id=matricula_id)
-
     # Eliminar la matrícula y los cursos asociados
-    matricula.delete()
-
+    if request.method == 'POST':
+        matricula.delete()
     # Añadir un mensaje de éxito
-    messages.success(request, f"La matrícula de {matricula.estudiante.usuario.username} ha sido eliminada correctamente.")
+        return redirect('listar_matriculas')
+    return HttpResponse("Método no permitido", status=405)
+
 def listar_matriculas(request):
     # Obtener todas las matrículas con los datos de estudiante y cursos
     matriculas = Matricula.objects.select_related('estudiante').prefetch_related('matriculacurso_set')
-    
     # Crear un diccionario donde agrupamos las matrículas por estudiante
     matriculas_info = {}
-    
     for matricula in matriculas:
         estudiante = matricula.estudiante
         info_personal = estudiante.informacionpersonal
-        
         estudiante_nombre = f"{info_personal.nombre} {info_personal.apellido}"
         if estudiante_nombre not in matriculas_info:
             matriculas_info[estudiante_nombre] = []
         matriculas_info[estudiante_nombre].append(matricula)
-    
+
     context = {
         'matriculas_info': matriculas_info
     }
     
     return render(request, 'matriculas/listar_matriculas.html', context)
-
 
 @login_required 
 @role_required('Administrador')
@@ -196,15 +187,18 @@ def guardar_matricula(request):
     if request.method == 'POST':
         codigo_estudiante = request.POST.get('codigo_estudiante')
         semestre_id = request.POST.get('semestre_id')
+        #semestre = get_object_or_404(Semestre, id=semestre_id)
         secciones_seleccionadas_ids = request.POST.getlist('secciones_seleccionadas[]')
 
         try:
             # Obtener el estudiante y el semestre actual
             estudiante = Estudiante.objects.get(codigo=codigo_estudiante)
+          #  semestre_id = request.POST.get('semestre_id')
             semestre = Semestre.objects.get(id=semestre_id)
 
             # Buscar o crear la matrícula para el estudiante en el semestre actual
             matricula, created = Matricula.objects.get_or_create(estudiante=estudiante, semestre=semestre)
+            #secciones_ids = request.POST.getlist('secciones_seleccionadas[]')
 
             # Guardar las secciones seleccionadas en la matrícula
             for seccion_id in secciones_seleccionadas_ids:

@@ -10,11 +10,13 @@ def perfil_estudiante(request):
     estudiante = request.user.estudiante
     informacion_personal = estudiante.informacionpersonal
     return render(request, 'index/perfil.html', {'estudiante': estudiante, 'informacion_personal': informacion_personal})
+'''
 @login_required
 @role_required('Estudiante')
 def listar_cursos(request):
     cursos = Curso.objects.all()  # Ajusta según tus necesidades
     return render(request, 'estudiantes/cursos.html', {'cursos': cursos})
+'''
 @login_required
 @role_required('Estudiante')
 def historial_notas(request):
