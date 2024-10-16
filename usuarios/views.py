@@ -5,6 +5,8 @@ from django.contrib.auth import login, logout, authenticate
 from .forms import UsuarioCreationForm
 from .decorators import role_required 
 from estudiantes.models import Estudiante
+from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse_lazy
 
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your view
@@ -83,3 +85,8 @@ def registrar_usuario(request):
         form = UsuarioCreationForm()  # Si es GET, muestra el formulario vacío
 
     return render(request, 'registrar_usuario.html', {'form': form})
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    success_url = reverse_lazy('password_reset_done')  

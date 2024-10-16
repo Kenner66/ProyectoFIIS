@@ -1,3 +1,5 @@
+
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Matricula, MatriculaCurso,Seccion,Semestre  
@@ -5,22 +7,10 @@ from cursos.models import HistorialNotas
 from estudiantes.models import Estudiante
 from usuarios.decorators import role_required 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import Matricula, Seccion, Semestre
-from cursos.models import HistorialNotas
 from django.http import HttpResponse
 
-'''
-@login_required
+@login_required 
 @role_required('Administrador')
-def listar_matriculas(request):
-    matriculas = Matricula.objects.select_related('estudiante').all()
-    return render(request, 'matriculas/listar_matriculas.html', {'matriculas': matriculas})
-'''
 def ver_matricula(request, matricula_id):
     # Obtener la matrícula y los cursos relacionados
     matricula = get_object_or_404(Matricula, id=matricula_id)
@@ -39,6 +29,8 @@ def ver_matricula(request, matricula_id):
     
     return render(request, 'matriculas/ver_matricula.html', context)
 
+@login_required 
+@role_required('Administrador')
 def eliminar_matricula(request, matricula_id):
     matricula = get_object_or_404(Matricula, id=matricula_id)
     # Eliminar la matrícula y los cursos asociados
@@ -48,6 +40,8 @@ def eliminar_matricula(request, matricula_id):
         return redirect('listar_matriculas')
     return HttpResponse("Método no permitido", status=405)
 
+@login_required 
+@role_required('Administrador')
 def listar_matriculas(request):
     # Obtener todas las matrículas con los datos de estudiante y cursos
     matriculas = Matricula.objects.select_related('estudiante').prefetch_related('matriculacurso_set')
@@ -104,6 +98,7 @@ def crear_matricula(request):
 
     # Si no se encuentra el semestre, devuelve un error o una respuesta vacía
     return JsonResponse({'error': 'Semestre no encontrado'}, status=404)
+
 
 @login_required
 @role_required('Administrador')
@@ -173,7 +168,8 @@ def validar_seccion(request, codigo_estudiante, seccion_id):
         return JsonResponse({
             'success': 'Validación exitosa, puedes añadir el curso.',
             'curso_nombre': curso.nombre,
-            'seccion_nombre': seccion.nombre
+            'seccion_nombre': seccion.nombre,
+            'creditos': seccion.curso.creditos,
         })
 
     except Estudiante.DoesNotExist:
@@ -182,33 +178,55 @@ def validar_seccion(request, codigo_estudiante, seccion_id):
         return JsonResponse({'error': 'Sección no encontrada.'})
 
 @login_required
-@role_required('Estudiante')
+@role_required('Administrador')
 def guardar_matricula(request):
     if request.method == 'POST':
         codigo_estudiante = request.POST.get('codigo_estudiante')
-        semestre_id = request.POST.get('semestre_id')
-        #semestre = get_object_or_404(Semestre, id=semestre_id)
+        semestres_ids = request.POST.getlist('semestre_id[]')  # Cambia para obtener todos los semestres seleccionados
         secciones_seleccionadas_ids = request.POST.getlist('secciones_seleccionadas[]')
+        # Calcular créditos totales de los cursos seleccionados
+        total_creditos = 0
+        for seccion_id in secciones_seleccionadas_ids:
+            seccion = Seccion.objects.get(id=seccion_id)
+            total_creditos += seccion.curso.creditos  # Sumar los créditos de cada curso
+
+        # Validar si los créditos totales exceden el límite
+        if total_creditos > 22:
+            return JsonResponse({'error': f'No puedes matricular más de 22 créditos. Créditos seleccionados: {total_creditos}.'})
 
         try:
-            # Obtener el estudiante y el semestre actual
             estudiante = Estudiante.objects.get(codigo=codigo_estudiante)
-          #  semestre_id = request.POST.get('semestre_id')
-            semestre = Semestre.objects.get(id=semestre_id)
+            secciones_seleccionadas = Seccion.objects.filter(id__in=secciones_seleccionadas_ids).select_related('semestre')
 
-            # Buscar o crear la matrícula para el estudiante en el semestre actual
-            matricula, created = Matricula.objects.get_or_create(estudiante=estudiante, semestre=semestre)
-            #secciones_ids = request.POST.getlist('secciones_seleccionadas[]')
+            # Agrupar las secciones por semestre
+            secciones_por_semestre = {}
+            for seccion in secciones_seleccionadas:
+                if seccion.semestre_id not in secciones_por_semestre:
+                    secciones_por_semestre[seccion.semestre_id] = []
+                secciones_por_semestre[seccion.semestre_id].append(seccion)
 
-            # Guardar las secciones seleccionadas en la matrícula
-            for seccion_id in secciones_seleccionadas_ids:
-                seccion = Seccion.objects.get(id=seccion_id)
+            # Validar créditos por semestre
+            for semestre_id, secciones in secciones_por_semestre.items():
+                total_creditos = sum(seccion.curso.creditos for seccion in secciones)
+                if total_creditos > 22:
+                    semestre = Semestre.objects.get(id=semestre_id)
+                    return JsonResponse({
+                        'error': f'No puedes matricular más de 22 créditos en el semestre {semestre.nombre}. Créditos seleccionados: {total_creditos}.'
+                    })
 
-                # Verificar si ya existe la matrícula de ese curso y sección
-                if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
-                    MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
-            
-            return JsonResponse({'success': 'Matrícula guardada correctamente.'})
+            # Crear una matrícula para cada semestre y asignar las secciones correspondientes
+            for semestre_id, secciones in secciones_por_semestre.items():
+                semestre = Semestre.objects.get(id=semestre_id)
+                matricula, created = Matricula.objects.get_or_create(
+                    estudiante=estudiante,
+                    semestre=semestre,
+                )
+
+                for seccion in secciones:
+                    if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
+                        MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
+
+            return JsonResponse({'success': 'Matrículas guardadas correctamente.'})
 
         except Estudiante.DoesNotExist:
             return JsonResponse({'error': 'Estudiante no encontrado.'})

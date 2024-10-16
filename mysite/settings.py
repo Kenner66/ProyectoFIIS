@@ -19,6 +19,17 @@ LOGIN_URL = 'signin'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'signin'
 
+# Configuración de correo para Outlook
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = '2020102466@unfv.edu.pe'  # Cambia esto por tu correo institucional
+EMAIL_HOST_PASSWORD = 'Kenner@666'  # Cambia esto por tu contraseña de correo
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER # Usa la contraseña de aplicación si es necesario
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
