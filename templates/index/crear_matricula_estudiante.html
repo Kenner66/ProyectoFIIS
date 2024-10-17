@@ -1,0 +1,190 @@
+{% extends "base_alumnos.html" %}
+
+{% block content %}
+<h2>Crear matrícula</h2>
+
+<!-- Información del Estudiante -->
+<div id="info-estudiante" class="mt-4">
+    <h2>Información del Estudiante</h2>
+    <p><strong>Nombre:</strong> {{ estudiante.informacionpersonal.nombre }} {{ estudiante.informacionpersonal.apellido }}</p>
+    <p><strong>Código:</strong> {{ estudiante.codigo }}</p>
+    <p><strong>Base:</strong> {{ estudiante.base }}</p>
+    <p><strong>Carrera:</strong> {{ estudiante.carrera }}</p>
+
+    <!-- Selección del semestre -->
+    <h4>Seleccionar Semestre</h4>
+    <div class="form-group">
+        <select id="semestre-select" class="form-control">
+            <option value="">Selecciona un semestre</option>
+            {% for semestre in semestres %}
+                <option value="{{ semestre.id }}">{{ semestre.año }} - {{ semestre.periodo }}</option>
+            {% endfor %}
+        </select>
+        <button id="cargar-secciones" class="btn btn-secondary mt-2">Cargar Secciones</button>
+        <button id="agregar-nuevo-semestre" class="btn btn-success mt-2">Agregar Nuevo Semestre</button>
+    </div>
+</div>
+
+<!-- Secciones Disponibles -->
+<div id="secciones-disponibles" class="mt-4" style="display:none;">
+    <h4>Secciones Disponibles</h4>
+    <div id="secciones-lista" class="list-group"></div> <!-- Aquí se mostrarán las secciones -->
+</div>
+
+<!-- Secciones Seleccionadas -->
+<div id="secciones-seleccionadas" class="mt-4">
+    <h4>Secciones Añadidas</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Sección</th>
+                <th>Créditos</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="secciones-seleccionadas-lista">
+            <!-- Aquí se mostrarán las secciones seleccionadas -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Total de Créditos -->
+<p id="total-creditos" class="font-weight-bold">Total de Créditos: 0</p>
+
+<!-- Formulario de Matrícula -->
+<form id="form-matricula" method="POST" action="{% url 'guardar_matricula_estudiante' %}">
+    {% csrf_token %}
+    <input type="hidden" name="codigo_estudiante" id="codigo_estudiante" value="{{ estudiante.codigo }}">
+    <input type="hidden" name="semestre_id" id="semestre_id">
+    <button type="button" onclick="guardarMatricula()" class="btn btn-primary">Guardar Matrícula</button>
+</form>
+
+<script>
+document.getElementById('cargar-secciones').addEventListener('click', function() {
+    const semestreId = document.getElementById('semestre-select').value;
+    if (!semestreId) {
+        alert('Por favor, seleccione un semestre.');
+        return;
+    }
+
+    fetch(`/alumnos/cargar_secciones/${semestreId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const seccionesLista = document.getElementById('secciones-lista');
+            seccionesLista.innerHTML = ''; // Limpiar lista anterior
+
+            data.forEach(seccion => {
+                const div = document.createElement('div');
+                div.innerHTML = `${seccion['curso__nombre']} - ${seccion['nombre']} - <button onclick="añadirSeccion(${seccion.id})">Añadir</button>`;
+                seccionesLista.appendChild(div);
+            });
+            document.getElementById('secciones-disponibles').style.display = 'block';
+        })
+        .catch(error => console.error('Error al cargar secciones:', error));
+});
+
+let totalCreditos = 0;
+
+function añadirSeccion(seccionId) {
+    fetch(`/alumnos/validar_seccion/${seccionId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                const seccionLista = document.getElementById('secciones-seleccionadas-lista');
+                const cursoYaAñadido = Array.from(seccionLista.children).some(row => row.innerText.includes(data.curso_nombre));
+
+                if (cursoYaAñadido) {
+                    alert(`Ya has añadido una sección del curso ${data.curso_nombre}.`);
+                } else {
+                    const nuevoElemento = document.createElement('tr');
+                    nuevoElemento.dataset.seccionId = seccionId; // Cambié data.seccion_id a seccionId para que coincida
+                    nuevoElemento.innerHTML = `
+                        <td>${data.curso_nombre}</td>
+                        <td>${data.seccion_nombre}</td>
+                        <td>${data.creditos}</td>
+                        <td><button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button></td>
+                    `;
+                    seccionLista.appendChild(nuevoElemento);
+                    
+                    totalCreditos += data.creditos;
+                    document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`;
+
+                    if (totalCreditos > 22) {
+                        alert('No puedes matricular más de 22 créditos.');
+                    }
+                }
+            }
+        })
+        .catch(error => console.error('Error al validar la sección:', error));
+}
+
+function guardarMatricula() {
+    const semestreId = document.getElementById('semestre-select').value;
+
+    // Obtener las secciones seleccionadas
+    const seccionesSeleccionadas = Array.from(document.querySelectorAll('#secciones-seleccionadas-lista tr')).map(tr => ({
+        seccion_id: tr.dataset.seccionId // Obtener el ID de la sección de cada fila
+    }));
+
+    // Comprobar que se han seleccionado secciones
+    if (seccionesSeleccionadas.length === 0 || !semestreId) {
+        alert('Por favor, selecciona al menos una sección y un semestre.');
+        return;
+    }
+
+    // Crear un FormData para enviar los datos
+    const formData = new FormData();
+    formData.append('semestre_id', semestreId); // Añadir el ID del semestre
+
+    // Añadir todas las secciones seleccionadas al FormData
+    seccionesSeleccionadas.forEach(seccion => {
+        formData.append('secciones_seleccionadas[]', seccion.seccion_id);
+    });
+
+    // Enviar los datos al servidor usando fetch
+    fetch('/alumnos/guardar_matricula/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.success);
+            limpiarSecciones(); // Limpiar las secciones después de guardar
+            document.getElementById('semestre-select').value = ""; // Resetear la selección de semestre
+            document.getElementById('secciones-disponibles').style.display = 'none'; // Ocultar secciones disponibles
+            document.getElementById('secciones-lista').innerHTML = ''; // Limpiar lista de secciones disponibles
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => console.error('Error al guardar la matrícula:', error));
+}
+
+// Función para limpiar las secciones añadidas y el total de créditos
+function limpiarSecciones() {
+    const seccionesSeleccionadas = document.getElementById('secciones-seleccionadas-lista');
+    seccionesSeleccionadas.innerHTML = ''; // Limpiar las secciones añadidas
+    totalCreditos = 0; // Reiniciar el total de créditos
+    document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`; // Actualizar el texto de créditos
+}
+
+// Botón para agregar un nuevo semestre y guardar el actual
+document.getElementById('agregar-nuevo-semestre').addEventListener('click', function() {
+    guardarMatricula();  // Cambiado de guardarMatriculaAutomatica a guardarMatricula
+});
+
+function eliminarSeccion(boton, creditos) {
+    const fila = boton.parentElement.parentElement;
+    fila.remove();
+    totalCreditos -= creditos;
+    document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`;
+}
+</script>
+{% endblock %}

@@ -11,6 +11,7 @@ class Matricula(models.Model):
     estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE)
     semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(default=timezone.now)
+    activa = models.BooleanField(default=True)  
 
     def __str__(self):
         return f"{self.estudiante.usuario.username} - {self.semestre.nombre} - {'Activa' if self.es_activa() else 'Inactiva'}"

@@ -175,10 +175,6 @@ function guardarMatricula() {
     semestre_id: semestreId // Asumiendo que el semestreId está en la variable
     }));
 
-    //({seccion_id: div.dataset.seccionId,
-      //      semestre_id: div.dataset.semestreId
-        //}));
-
     // Crear un FormData para enviar los datos
     const formData = new FormData();
     formData.append('codigo_estudiante', codigoEstudiante);
@@ -189,11 +185,6 @@ function guardarMatricula() {
     formData.append('secciones_seleccionadas[]', seccion.seccion_id);
     formData.append('semestre_id[]', seccion.semestre_id);
 });
-   // {
-        //    formData.append('secciones_seleccionadas[]', seccion.seccion_id);
-         //   formData.append('semestres[]', seccion.semestre_id);
-    //});
-    
     // Enviar los datos al servidor usando fetch
     fetch('/matriculas/guardar_matricula/', {
         method: 'POST',
