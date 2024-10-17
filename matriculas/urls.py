@@ -17,6 +17,7 @@ urlpatterns = [
     path('guardar_matricula/', views.guardar_matricula, name='guardar_matricula'),
     path('eliminar_matricula/<int:matricula_id>/', views.eliminar_matricula, name='eliminar_matricula'),
     path('ver_matricula/<int:matricula_id>/', views.ver_matricula, name='ver_matricula'),
+    path('matriculas/pdf/<int:estudiante_id>/',views.descargar_pdf, name='descargar_pdf'),
     #path('matriculas/remover_seccion/<str:codigo_estudiante>/<int:seccion_id>/', remover_seccion, name='remover_seccion'),
 ]
 

@@ -2,48 +2,77 @@
 
 {% block content %}
 <h2>Crear matrícula</h2>
-<h3>Cargar Información del Estudiante</h3>
 
-<form method="GET" id="cargar-estudiante-form">
+<!-- Formulario para cargar el estudiante -->
+<h3>Cargar Información del Estudiante</h3>
+<form method="GET" id="cargar-estudiante-form" class="form-inline">
     {% csrf_token %}
     <label for="codigo_estudiante">Código del Estudiante:</label>
-    <input type="text" id="codigo_estudiante" name="codigo_estudiante" required>
-    <button type="submit">Buscar</button>
+    <input type="text" id="codigo_estudiante" name="codigo_estudiante" required class="form-control mb-2">
+    <button type="submit" class="btn btn-primary mb-2">Buscar</button>
 </form>
 
 <!-- Información del Estudiante -->
-<div id="info-estudiante" style="display:none;">
+<div id="info-estudiante" class="mt-4" style="display:none;">
     <h3>Información del Estudiante</h3>
-    <p id="nombre-estudiante"></p> <!-- Nombre del estudiante -->
-    <p id="apellido-estudiante"></p>
-    <div id="semestres">
-        <h4>Seleccionar Semestre</h4>
-        <select id="semestre-select">
+    <table class="table">
+        <tr>
+            <th>Nombre</th>
+            <td id="nombre-estudiante"></td>
+        </tr>
+        <tr>
+            <th>Apellido</th>
+            <td id="apellido-estudiante"></td>
+        </tr>
+    </table>
+
+    <!-- Selección del semestre -->
+    <h4>Seleccionar Semestre</h4>
+    <div class="form-group">
+        <select id="semestre-select" class="form-control">
             <option value="">Selecciona un semestre</option>
             {% for semestre in semestres %}
                 <option value="{{ semestre.id }}">{{ semestre.año }} - {{ semestre.periodo }}</option>
             {% endfor %}
         </select>
-        <button id="cargar-secciones">Cargar Secciones</button>
-        <button id="agregar-nuevo-semestre">Agregar Nuevo Semestre</button>
-    </div>
-    
-    <div id="secciones-disponibles" style="display:none;">
-        <h4>Secciones Disponibles</h4>
-        <div id="secciones-lista"></div> <!-- Aquí se mostrarán las secciones -->
+        <button id="cargar-secciones" class="btn btn-secondary mt-2">Cargar Secciones</button>
+        <button id="agregar-nuevo-semestre" class="btn btn-success mt-2">Agregar Nuevo Semestre</button>
     </div>
 </div>
-<div id="secciones-seleccionadas">
+
+<!-- Secciones Disponibles -->
+<div id="secciones-disponibles" class="mt-4" style="display:none;">
+    <h4>Secciones Disponibles</h4>
+    <div id="secciones-lista" class="list-group"></div> <!-- Aquí se mostrarán las secciones -->
+</div>
+
+<!-- Secciones Seleccionadas -->
+<div id="secciones-seleccionadas" class="mt-4">
     <h4>Secciones Añadidas</h4>
-    <!-- Aquí se mostrarán las secciones seleccionadas -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Sección</th>
+                <th>Créditos</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="secciones-seleccionadas-lista">
+            <!-- Aquí se mostrarán las secciones seleccionadas -->
+        </tbody>
+    </table>
 </div>
-<p id="total-creditos">Total de Créditos: 0</p>
+
+<!-- Total de Créditos -->
+<p id="total-creditos" class="font-weight-bold">Total de Créditos: 0</p>
+
+<!-- Formulario de Matrícula -->
 <form id="form-matricula" method="POST" action="{% url 'guardar_matricula' %}">
     {% csrf_token %}
     <input type="hidden" name="codigo_estudiante" id="codigo_estudiante_hidden" value="{{ estudiante.codigo }}">
     <input type="hidden" name="semestre_id" id="semestre_id">
-
-    <button type="button" onclick="guardarMatricula()">Guardar Matrícula</button>
+    <button type="button" onclick="guardarMatricula()" class="btn btn-primary">Guardar Matrícula</button>
 </form>
 <script>
     
@@ -117,7 +146,8 @@ function añadirSeccion(seccionId) {
                     nuevoElemento.setAttribute('data-seccion-id', seccionId); // Agregar el data-seccion-id
                     nuevoElemento.setAttribute('data-creditos', data.creditos);  // Almacenar los créditos en el DOM
 
-                    nuevoElemento.innerHTML = `Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} - Créditos: ${data.creditos}`;
+                    nuevoElemento.innerHTML = `Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} - Créditos: ${data.creditos}
+                    <button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button>`;
                     
                     seccionLista.appendChild(nuevoElemento);
                     
@@ -243,6 +273,16 @@ function guardarMatriculaAutomatica() {
             document.getElementById('secciones-lista').innerHTML = ''; // Limpiar lista de secciones disponibles
         });
     });
+    function eliminarSeccion(boton, creditos) {
+    const seccionDiv = boton.parentElement;
+    seccionDiv.remove(); // Eliminar el div que contiene la sección
+    totalCreditos -= creditos; // Restar los créditos de la sección eliminada
+    document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`;
+
+    if (totalCreditos > 22) {
+        alert('No puedes matricular más de 22 créditos.');
+    }
+}
 
 </script>
 {% endblock %}

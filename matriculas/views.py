@@ -8,6 +8,13 @@ from estudiantes.models import Estudiante
 from usuarios.decorators import role_required 
 from django.http import JsonResponse
 from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from xhtml2pdf import pisa
+from django.template.loader import render_to_string
 
 @login_required 
 @role_required('Administrador')
@@ -40,26 +47,37 @@ def eliminar_matricula(request, matricula_id):
         return redirect('listar_matriculas')
     return HttpResponse("Método no permitido", status=405)
 
-@login_required 
+@login_required
 @role_required('Administrador')
 def listar_matriculas(request):
     # Obtener todas las matrículas con los datos de estudiante y cursos
-    matriculas = Matricula.objects.select_related('estudiante').prefetch_related('matriculacurso_set')
+    matriculas = Matricula.objects.select_related('estudiante', 'semestre').prefetch_related('matriculacurso_set')
+
     # Crear un diccionario donde agrupamos las matrículas por estudiante
     matriculas_info = {}
     for matricula in matriculas:
         estudiante = matricula.estudiante
         info_personal = estudiante.informacionpersonal
         estudiante_nombre = f"{info_personal.nombre} {info_personal.apellido}"
+        
+        # Usar el código de estudiante para agrupar
         if estudiante_nombre not in matriculas_info:
-            matriculas_info[estudiante_nombre] = []
-        matriculas_info[estudiante_nombre].append(matricula)
+            matriculas_info[estudiante_nombre] = {
+                'info_personal': info_personal,
+                'matriculas': []
+            }
+        
+        # Añadir las matrículas (de diferentes semestres) del estudiante
+        matriculas_info[estudiante_nombre]['matriculas'].append(matricula)
 
     context = {
         'matriculas_info': matriculas_info
     }
     
     return render(request, 'matriculas/listar_matriculas.html', context)
+
+
+
 
 @login_required 
 @role_required('Administrador')
@@ -236,3 +254,43 @@ def guardar_matricula(request):
             return JsonResponse({'error': 'Una de las secciones seleccionadas no existe.'})
 
     return JsonResponse({'error': 'Método no permitido.'})
+
+
+
+@login_required
+@role_required('Administrador')
+def descargar_pdf(request, estudiante_id):
+    # Filtrar las matrículas del estudiante
+    matriculas = Matricula.objects.filter(estudiante_id=estudiante_id).prefetch_related('matriculacurso_set')
+
+    # Obtener información del estudiante
+    estudiante = Estudiante.objects.get(id=estudiante_id)
+
+    # Calcular créditos por semestre
+    creditos_por_semestre = {}
+    for matricula in matriculas:
+        total_creditos = 0
+        cursos = MatriculaCurso.objects.filter(matricula=matricula).prefetch_related('seccion__curso')
+        for matricula_curso in cursos:
+            total_creditos += matricula_curso.seccion.curso.creditos
+        
+        creditos_por_semestre[matricula.id] = total_creditos  
+
+    # Crear el objeto HttpResponse con el tipo de contenido adecuado
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="matricula_{estudiante_id}.pdf"'
+
+    # Renderizar el HTML desde el template, incluyendo creditos_por_semestre
+    html = render_to_string('matriculas/matricula_pdf.html', {
+        'matriculas': matriculas,
+        'estudiante': estudiante,
+        'creditos_por_semestre': creditos_por_semestre
+    })
+
+    # Crear el PDF a partir del HTML
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('Error al generar PDF')
+
+    return response

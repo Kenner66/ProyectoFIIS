@@ -8,34 +8,44 @@
 <table>
     <thead>
         <tr>
-
             <th>Estudiante</th>
-           <!-- <th>Semestre</th>-->
+            <th>Semestres</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        {% for estudiante, matriculas in matriculas_info.items %}
-            {% for matricula in matriculas %}
-            <tr>
-                <td>{{ estudiante }}</td>
-                <!--<td>{{ matricula.semestre.año }} - {{ matricula.semestre.periodo }}</td>-->
-                <td>
-                    <a href="{% url 'ver_matricula' matricula.id %}">Ver Matrícula</a>
-                    <form method="POST" action="{% url 'eliminar_matricula' matricula.id %}">
-                        {% csrf_token %}
-                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta matrícula?')">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
+        {% for estudiante, data in matriculas_info.items %}
+        <tr>
+            <td>{{ data.info_personal.nombre }} {{ data.info_personal.apellido }}</td>
+            <td>
+                <!-- Listar los semestres en los que el estudiante está matriculado -->
+                <ul>
+                {% for matricula in data.matriculas %}
+                    <li>
+                        {{ matricula.semestre.año }} - {{ matricula.semestre.periodo }}
+                        <a href="{% url 'ver_matricula' matricula.id %}">Ver Matrícula</a>
+                        <form method="POST" action="{% url 'eliminar_matricula' matricula.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta matrícula?')">Eliminar</button>
+                        </form>
+                    </li>
+                {% endfor %}
+                </ul>
+
+            </td>
+            <td>
+                <!-- Opciones de acciones si se requieren -->
+                <a href="{% url 'descargar_pdf' data.matriculas.0.estudiante.id %}">Descargar PDF</a>
+            </td>
+        </tr>
         {% empty %}
-            <tr>
-                <td colspan="3">No hay matrículas disponibles.</td>
-            </tr>
+        <tr>
+            <td colspan="3">No hay matrículas disponibles.</td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>
+
 {% if messages %}
     <ul>
     {% for message in messages %}
