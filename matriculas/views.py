@@ -226,7 +226,7 @@ def guardar_matricula(request):
                     if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
                         MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
 
-            return JsonResponse({'success': 'Matrículas guardadas correctamente.'})
+                return JsonResponse({'success': 'Matrículas guardadas correctamente.'})
 
         except Estudiante.DoesNotExist:
             return JsonResponse({'error': 'Estudiante no encontrado.'})

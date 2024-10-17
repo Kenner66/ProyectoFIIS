@@ -25,6 +25,7 @@
             {% endfor %}
         </select>
         <button id="cargar-secciones">Cargar Secciones</button>
+        <button id="agregar-nuevo-semestre">Agregar Nuevo Semestre</button>
     </div>
     
     <div id="secciones-disponibles" style="display:none;">
@@ -39,7 +40,7 @@
 <p id="total-creditos">Total de Créditos: 0</p>
 <form id="form-matricula" method="POST" action="{% url 'guardar_matricula' %}">
     {% csrf_token %}
-    <input type="hidden" name="codigo_estudiante" id="codigo_estudiante" value="{{ estudiante.codigo }}">
+    <input type="hidden" name="codigo_estudiante" id="codigo_estudiante_hidden" value="{{ estudiante.codigo }}">
     <input type="hidden" name="semestre_id" id="semestre_id">
 
     <button type="button" onclick="guardarMatricula()">Guardar Matrícula</button>
@@ -105,39 +106,45 @@ function añadirSeccion(seccionId) {
             } else {
                 // Comprobar si el curso ya fue añadido
                 const seccionLista = document.getElementById('secciones-seleccionadas');
-                const seccionesExistentes = Array.from(seccionLista.getElementsByTagName('p'));
+                const seccionesExistentes = Array.from(seccionLista.getElementsByTagName('div')); // Cambia a 'div' si estás añadiendo un 'div'
                 const cursoYaAñadido = seccionesExistentes.some(element => element.innerText.includes(data.curso_nombre));
+
                 if (cursoYaAñadido) {
                     alert(`Ya has añadido una sección del curso ${data.curso_nombre}. No puedes inscribir en múltiples secciones del mismo curso.`);
                 } else {
                     alert(`Sección añadida exitosamente.`);
                     const nuevoElemento = document.createElement('div');
                     nuevoElemento.setAttribute('data-seccion-id', seccionId); // Agregar el data-seccion-id
-                    
                     nuevoElemento.setAttribute('data-creditos', data.creditos);  // Almacenar los créditos en el DOM
-                    
+
                     nuevoElemento.innerHTML = `Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} - Créditos: ${data.creditos}`;
                     
                     seccionLista.appendChild(nuevoElemento);
-                }
-                totalCreditos += data.creditos;
-                document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`;
+                    
+                    totalCreditos += data.creditos;
+                    document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`;
+                    actualizarEstadoGuardar(); // Actualizar estado del botón de guardar
                     // Verificar si se ha superado el límite de 22 créditos
                     if (totalCreditos > 22) {
                         alert('No puedes matricular más de 22 créditos.');
                     }
+                }
             }
         })
         .catch(error => console.error('Error al validar la sección:', error));
 }
+
 
 function guardarMatricula() {
     const codigoEstudiante = document.getElementById('codigo_estudiante').value;
     const semestreId = document.getElementById('semestre-select').value;
     
     // Obtener las secciones seleccionadas
-    const seccionesSeleccionadas = Array.from(document.querySelectorAll('#secciones-seleccionadas div')).map(div => 
-    div.dataset.seccionId);
+    const seccionesSeleccionadas = Array.from(document.querySelectorAll('#secciones-seleccionadas div')).map(div => ({
+    seccion_id: div.dataset.seccionId,
+    semestre_id: semestreId // Asumiendo que el semestreId está en la variable
+    }));
+
     //({seccion_id: div.dataset.seccionId,
       //      semestre_id: div.dataset.semestreId
         //}));
@@ -148,8 +155,10 @@ function guardarMatricula() {
     formData.append('semestre_id', semestreId);
     
     // Añadir todas las secciones seleccionadas al FormData
-    seccionesSeleccionadas.forEach(seccionId => 
-    formData.append('secciones_seleccionadas[]', seccionId));
+    seccionesSeleccionadas.forEach(seccion => {
+    formData.append('secciones_seleccionadas[]', seccion.seccion_id);
+    formData.append('semestre_id[]', seccion.semestre_id);
+});
    // {
         //    formData.append('secciones_seleccionadas[]', seccion.seccion_id);
          //   formData.append('semestres[]', seccion.semestre_id);
@@ -173,5 +182,67 @@ function guardarMatricula() {
     })
     .catch(error => console.error('Error al guardar la matrícula:', error));
 }
+
+
+// Función para guardar la matrícula automáticamente
+function guardarMatriculaAutomatica() {
+        const codigoEstudiante = document.getElementById('codigo_estudiante').value;
+        const semestreId = document.getElementById('semestre-select').value;
+
+        // Obtener las secciones seleccionadas
+        const seccionesSeleccionadas = Array.from(document.querySelectorAll('#secciones-seleccionadas div')).map(div => 
+            div.dataset.seccionId
+        );
+
+        if (seccionesSeleccionadas.length === 0 || !semestreId) {
+            return; // No guardar si no hay secciones seleccionadas o semestre no seleccionado
+        }
+
+        // Crear un FormData para enviar los datos
+        const formData = new FormData();
+        formData.append('codigo_estudiante', codigoEstudiante);
+        formData.append('semestre_id', semestreId);
+
+        // Añadir todas las secciones seleccionadas al FormData
+        seccionesSeleccionadas.forEach(seccionId => formData.append('secciones_seleccionadas[]', seccionId));
+
+        // Enviar los datos al servidor usando fetch
+        return fetch('/matriculas/guardar_matricula/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Semestre guardado exitosamente.');
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => console.error('Error al guardar la matrícula:', error));
+    }
+
+    // Función para limpiar las secciones añadidas y el total de créditos
+    function limpiarSecciones() {
+        const seccionesSeleccionadas = document.getElementById('secciones-seleccionadas');
+        seccionesSeleccionadas.innerHTML = ''; // Limpiar las secciones añadidas
+        totalCreditos = 0; // Reiniciar el total de créditos
+        document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`; // Actualizar el texto de créditos
+    }
+
+    // Botón para agregar un nuevo semestre y guardar el actual
+    document.getElementById('agregar-nuevo-semestre').addEventListener('click', function() {
+        guardarMatriculaAutomatica()  // Guardar automáticamente el semestre actual
+        .then(() => {
+            limpiarSecciones(); // Limpiar las secciones añadidas
+            document.getElementById('semestre-select').value = ""; // Resetear la selección de semestre
+            document.getElementById('secciones-disponibles').style.display = 'none'; // Ocultar secciones disponibles
+            document.getElementById('secciones-lista').innerHTML = ''; // Limpiar lista de secciones disponibles
+        });
+    });
+
 </script>
 {% endblock %}
