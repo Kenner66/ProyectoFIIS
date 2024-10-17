@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 #from django.contrib.auth import login, logout, authenticate
 from usuarios.decorators import role_required 
-from cursos.models import HistorialNotas
+from cursos.models import HistorialNotas,Curso
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from matriculas.models import Matricula, MatriculaCurso, Seccion, Semestre
@@ -18,6 +18,26 @@ from django.template.loader import render_to_string
 #from reportlab.lib.units import inch
 from xhtml2pdf import pisa
 #from django.template.loader import render_to_string
+
+
+@login_required
+@role_required('Estudiante')
+def cursos_por_ciclo(request):
+    # Obtener todos los cursos
+    cursos = Curso.objects.all()
+
+    # Agrupar cursos por ciclo
+    cursos_por_ciclo = {}
+    for curso in cursos:
+        if curso.ciclo not in cursos_por_ciclo:
+            cursos_por_ciclo[curso.ciclo] = []
+        cursos_por_ciclo[curso.ciclo].append(curso)
+
+    # Pasar el diccionario de cursos agrupados al template
+    return render(request, 'index/cursos_por_ciclo.html', {
+        'cursos_por_ciclo': cursos_por_ciclo,
+    })
+
 
 from django.shortcuts import render, redirect
 def verificar_matricula(request):

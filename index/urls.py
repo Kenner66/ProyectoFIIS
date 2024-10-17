@@ -16,10 +16,9 @@ urlpatterns = [
     path('validar_seccion/<int:seccion_id>/', views.validar_seccion_estudiante, name='validar_seccion_estudiante'),
     # Otras URLs de tu aplicación
     path('verificar_matricula/', views.verificar_matricula, name='verificar_matricula'),
-    path('descargar_pdf/<int:estudiante_id>/', views.descargar_pdf_estudiante, name='descargar_pdf_estudiante'),
+    path('descargar_pdf/<int:estudiante_id>/', views.descargar_pdf_estudiante, name='descargar_pdf_estudiante'), # Asegúrate de tener la importación correcta
+    path('cursos_por_ciclo/', views.cursos_por_ciclo, name='cursos_por_ciclo'),
 
-    #path('horarios/', views.horarios, name='horarios'),
-    
 ]
 
 

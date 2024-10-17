@@ -1,0 +1,32 @@
+{% extends 'base_alumnos.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Cursos Disponibles por Ciclo</h2>
+    <div class="row">
+        {% for ciclo, cursos in cursos_por_ciclo.items %}
+            <div class="col-12">
+                <button class="btn btn-primary" onclick="toggleCursos('ciclo{{ ciclo }}')">Ciclo {{ ciclo }}</button>
+                <div id="ciclo{{ ciclo }}" class="curso-list" style="display: none;">
+                    <ul>
+                        {% for curso in cursos %}
+                            <li>{{ curso.nombre }} ({{ curso.creditos }} créditos)</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function toggleCursos(cicloId) {
+        var cursosDiv = document.getElementById(cicloId);
+        if (cursosDiv.style.display === "none") {
+            cursosDiv.style.display = "block"; // Mostrar cursos
+        } else {
+            cursosDiv.style.display = "none"; // Ocultar cursos
+        }
+    }
+</script>
+{% endblock %}
