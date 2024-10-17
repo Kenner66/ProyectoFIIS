@@ -3,6 +3,72 @@ from .models import Estudiante,InformacionPersonal
 from .forms import EstudianteForm,InformacionPersonalForm
 from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required 
+from django.contrib import messages
+from usuarios.models import Usuario
+import csv
+
+@login_required
+@role_required('Administrador')
+def cargar_estudiantes_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file:
+            messages.error(request, 'Por favor, sube un archivo CSV.')
+            return render(request, 'estudiantes/cargar_estudiantes_csv.html')
+
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'El archivo subido no es un archivo CSV.')
+            return render(request, 'estudiantes/cargar_estudiantes_csv.html')
+
+        # Leer el archivo CSV
+        file_data = csv_file.read().decode('latin-1')
+        lines = file_data.splitlines()
+        reader = csv.DictReader(lines)
+
+        for row in reader:
+            username = row['username']
+
+            try:
+                usuario = Usuario.objects.get(username=username)  # Verificar si el usuario existe
+            except Usuario.DoesNotExist:
+                messages.error(request, f'El usuario con username "{username}" no existe.')
+                continue  # Saltar al siguiente registro si no existe el usuario
+
+            # Verificar si el estudiante ya existe
+            if Estudiante.objects.filter(codigo=row['codigo']).exists():
+                estudiante = Estudiante.objects.get(codigo=row['codigo'])
+                messages.warning(request, f'El estudiante con código {row["codigo"]} ya existe y se omitirá.')
+                continue  # O, si prefieres, puedes actualizar el estudiante en lugar de omitirlo
+            
+            try:
+                # Crear el nuevo estudiante
+                estudiante = Estudiante(
+                    usuario=usuario,
+                    codigo=row['codigo'],
+                    base=row['base'],
+                    carrera=row['carrera'],
+                    activo=row.get('activo', 'True') == 'True'
+                )
+                estudiante.save()
+
+                # Crear la información personal
+                informacion_personal = InformacionPersonal(
+                    estudiante=estudiante,
+                    dni=row['dni'],
+                    nombre=row['nombre'],
+                    apellido=row['apellido'],
+                    fecha_nacimiento=row['fecha_nacimiento']
+                )
+                informacion_personal.save()
+
+            except Exception as e:
+                messages.error(request, f'Error al crear estudiante para "{username}": {str(e)}')
+                continue
+
+        messages.success(request, 'Estudiantes cargados exitosamente.')
+    return render(request, 'estudiantes/cargar_estudiantes_csv.html')
+
+
 @login_required
 @role_required('Administrador')
 def listar_estudiantes(request):

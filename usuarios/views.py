@@ -15,7 +15,7 @@ from .forms import CSVUploadForm
 from .models import Usuario, Rol
 import secrets
 import string
-import io
+
 
 def generar_contraseña(length=10):
     """Genera una contraseña aleatoria de longitud especificada."""

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+{% block title %}Cargar Estudiantes{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Cargar Estudiantes desde CSV</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="csv_file">Seleccionar archivo CSV:</label>
+            <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+        </div>
+        <button type="submit">Cargar Estudiantes</button>
+    </form>
+    <div class="instructions">
+        <p>Instrucciones para la carga masiva de estudiantes</p>
+            <ol>
+                <li>Asegúrate de que los estudiantes ya existan como usuarios en el sistema con el <strong>username</strong> correspondiente.</li>
+                <li>El archivo CSV debe contener las siguientes columnas: <strong>username, código, base, carrera, activo, dni, nombre, apellido, fecha de nacimiento</strong>.</li>
+                <li>Descarga la plantilla de ejemplo si lo necesitas.</li>
+                <li>Selecciona tu archivo CSV y presiona <strong>Cargar</strong> para registrar los estudiantes en el sistema.</li>
+            </ol>
+        <img src="{% static 'images/estudiantes_csv.jpg' %}" alt="Ejemplo CSV" class="instrucciones-imagen">
+        <!-- Botón de descarga de la plantilla CSV -->
+        <a href="{% static 'files/plantilla_estudiantes.csv' %}" download class="btn btn-primary">
+            Descargar Plantilla CSV
+        </a>
+    </div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

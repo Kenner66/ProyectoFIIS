@@ -6,6 +6,63 @@ from .forms import CursoForm,HistorialNotasForm
 from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required 
 from django.core.exceptions import ValidationError
+import csv
+from django.contrib.auth.hashers import make_password
+from django.contrib import messages
+
+
+@login_required
+@role_required('Administrador')
+def cargar_cursos_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file:
+            messages.error(request, 'Por favor, sube un archivo CSV.')
+            return render(request, 'cursos/cargar_cursos_csv.html')
+
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'El archivo subido no es un archivo CSV.')
+            return render(request, 'cursos/cargar_cursos_csv.html')
+
+        try:
+            file_data = csv_file.read().decode('utf-8-sig')  # Para manejar posibles caracteres especiales
+            lines = file_data.splitlines()
+            reader = csv.DictReader(lines)
+
+            for row in reader:
+                try:
+                    curso = Curso(
+                        codigo=row['codigo'],
+                        nombre=row['nombre'],
+                        descripcion=row.get('descripcion', ''),
+                        creditos=row['creditos'],
+                        ciclo=row['ciclo'],
+                    )
+                    curso.save()
+
+                    # Manejar prerequisitos
+                    if 'pre_requisitos' in row and row['pre_requisitos']:
+                        pre_requisitos_codigos = row['pre_requisitos'].split(';')
+                        for codigo_pre_req in pre_requisitos_codigos:
+                            try:
+                                pre_requisito = Curso.objects.get(codigo=codigo_pre_req)
+                                curso.pre_requisitos.add(pre_requisito)
+                            except Curso.DoesNotExist:
+                                messages.warning(request, f'Curso prerequisito con código {codigo_pre_req} no existe.')
+                    curso.save()
+
+                except Exception as e:
+                    messages.error(request, f'Error al crear el curso {row["nombre"]}: {str(e)}')
+                    continue
+
+            messages.success(request, 'Cursos cargados exitosamente.')
+            return redirect('home_admin')
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al procesar el archivo: {str(e)}')
+
+    return render(request, 'cursos/cargar_cursos_csv.html')
+
+
 @login_required
 @role_required('Administrador')
 def listar_cursos(request):

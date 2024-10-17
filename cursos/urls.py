@@ -8,5 +8,6 @@ urlpatterns = [
     path('historial/', views.listar_estudiantes_historial, name='listar_estudiantes_historial'),
     path('historial/<int:estudiante_id>/', views.historial_notas_estudiante, name='historial_notas_estudiante'),
     path('historial/<int:estudiante_id>/agregar_nota/', views.agregar_nota, name='agregar_nota'),
+    path('cargar-cursos-csv/', views.cargar_cursos_csv, name='cargar_cursos_csv'),
 ]
 
