@@ -12,9 +12,16 @@ class Matricula(models.Model):
     semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(default=timezone.now)
     activa = models.BooleanField(default=True)  
+    class Meta:
+        unique_together = ('estudiante', 'semestre') 
 
     def __str__(self):
         return f"{self.estudiante.usuario.username} - {self.semestre.nombre} - {'Activa' if self.es_activa() else 'Inactiva'}"
+
+    def clean(self):
+        # Verifica si el estudiante ya tiene una matrícula en el mismo semestre
+        if Matricula.objects.filter(estudiante=self.estudiante, semestre=self.semestre).exists():
+            raise ValidationError(f"El estudiante {self.estudiante.usuario.username} ya está matriculado en el semestre {self.semestre.nombre}.")
 
 class MatriculaCurso(models.Model):
     matricula = models.ForeignKey(Matricula, on_delete=models.CASCADE)

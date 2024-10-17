@@ -1,7 +1,8 @@
+
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout, authenticate
+#from django.contrib.auth import login, logout, authenticate
 from usuarios.decorators import role_required 
-from cursos.models import Curso, HistorialNotas
+from cursos.models import HistorialNotas
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from matriculas.models import Matricula, MatriculaCurso, Seccion, Semestre
@@ -9,31 +10,28 @@ from cursos.models import HistorialNotas
 from estudiantes.models import Estudiante
 from django.http import JsonResponse
 from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from reportlab.lib import colors
-from reportlab.lib.units import inch
-from xhtml2pdf import pisa
-from django.template.loader import render_to_string
+#from reportlab.lib.pagesizes import letter
+#from reportlab.pdfgen import canvas
+#from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+#from reportlab.lib import colors
+#from reportlab.lib.units import inch
+#from xhtml2pdf import pisa
+#from django.template.loader import render_to_string
 
 from django.shortcuts import render, redirect
-from .models import Matricula, Estudiante
-
-@login_required
-@role_required('Estudiante')
 def verificar_matricula(request):
-    estudiante = Estudiante.objects.get(usuario=request.user)
-    
-    # Verificar si el estudiante ya tiene una matrícula registrada
-    matricula_existente = Matricula.objects.filter(estudiante=estudiante).exists()
+    if request.user.is_authenticated:
+        estudiante = request.user.estudiante
+        # Suponiendo que solo hay una matrícula activa
+        matricula_activa = Matricula.objects.filter(estudiante=estudiante, estado=True).first()
 
-    if matricula_existente:
-        # Si ya está matriculado, redirigir a la página que indica que ya está matriculado
-        return render(request, 'ya_matriculado.html')
+        if matricula_activa:
+            return render(request, 'matricula_activa.html', {'matricula': matricula_activa})
+        else:
+            return render(request, 'sin_matricula.html')
     else:
-        # Si no está matriculado, redirigir a la página de matriculación
-        return redirect('matricularse')  # Cambia 'matricularse' por la URL de la vista de matriculación
+        return redirect('home_estudiante')  # O la ruta de inicio de sesión que tengas
+        
 
 
 @login_required
@@ -186,13 +184,7 @@ def perfil_estudiante(request):
     estudiante = request.user.estudiante
     informacion_personal = estudiante.informacionpersonal
     return render(request, 'index/perfil.html', {'estudiante': estudiante, 'informacion_personal': informacion_personal})
-'''
-@login_required
-@role_required('Estudiante')
-def listar_cursos(request):
-    cursos = Curso.objects.all()  # Ajusta según tus necesidades
-    return render(request, 'estudiantes/cursos.html', {'cursos': cursos})
-'''
+
 @login_required
 @role_required('Estudiante')
 def historial_notas(request):
@@ -202,3 +194,4 @@ def historial_notas(request):
 @role_required('Estudiante')
 def asesorias(request):
     return render(request, 'estudiantes/asesorias.html', {'asesorias': asesorias})
+
