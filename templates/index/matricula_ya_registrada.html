@@ -1,0 +1,15 @@
+{% extends 'base_alumnos.html' %}
+
+{% block content %}
+  <div class="alert alert-info">
+    <h2>Matrícula ya registrada</h2>
+    <p>Ya tienes una matrícula activa en el semestre actual. No es posible realizar una nueva matrícula.</p>
+  </div>
+
+  {% if estudiante %}
+      <a href="{% url 'descargar_pdf_estudiante' estudiante.id %}">Descargar PDF de Matrícula</a>
+
+  {% else %}
+      <p>No se encontró el estudiante.</p>
+  {% endif %}
+{% endblock %}

@@ -3,6 +3,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     
     path('perfil/', views.perfil_estudiante, name='perfil_estudiante'),
@@ -15,6 +16,7 @@ urlpatterns = [
     path('validar_seccion/<int:seccion_id>/', views.validar_seccion_estudiante, name='validar_seccion_estudiante'),
     # Otras URLs de tu aplicación
     path('verificar_matricula/', views.verificar_matricula, name='verificar_matricula'),
+    path('descargar_pdf/<int:estudiante_id>/', views.descargar_pdf_estudiante, name='descargar_pdf_estudiante'),
 
     #path('horarios/', views.horarios, name='horarios'),
     

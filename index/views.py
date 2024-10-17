@@ -10,12 +10,13 @@ from cursos.models import HistorialNotas
 from estudiantes.models import Estudiante
 from django.http import JsonResponse
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 #from reportlab.lib.pagesizes import letter
 #from reportlab.pdfgen import canvas
 #from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 #from reportlab.lib import colors
 #from reportlab.lib.units import inch
-#from xhtml2pdf import pisa
+from xhtml2pdf import pisa
 #from django.template.loader import render_to_string
 
 from django.shortcuts import render, redirect
@@ -47,12 +48,22 @@ def cargar_secciones_estudiante(request, semestre_id):
 @login_required
 @role_required('Estudiante')
 def crear_matricula_estudiante(request):
-    if request.method == 'GET':
-        # Obtener el estudiante actual
-        estudiante = get_object_or_404(Estudiante, usuario=request.user)
-        # Obtener semestres activos
-        semestres = Semestre.objects.filter(estado=True)
+    # Obtener el estudiante actual
+    estudiante = get_object_or_404(Estudiante, usuario=request.user)
+    print(estudiante)
+    # Obtener semestres activos
+    semestres = Semestre.objects.filter(estado=True)
 
+    # Verificar si el estudiante ya está matriculado en un semestre activo
+    matricula_existente = Matricula.objects.filter(estudiante=estudiante, semestre__estado=True).exists()
+
+    if matricula_existente:
+        # Redirigir a un template que indique que ya está matriculado
+        return render(request, 'index/matricula_ya_registrada.html', {
+        'estudiante': estudiante,  # Asegúrate de pasar el estudiante aquí
+    })
+
+    if request.method == 'GET':
         return render(request, 'index/crear_matricula_estudiante.html', {
             'semestres': semestres,
             'estudiante': estudiante,  # Pasar la información del estudiante al template
@@ -73,6 +84,7 @@ def crear_matricula_estudiante(request):
         return JsonResponse(secciones_data, safe=False)
 
     return JsonResponse({'error': 'Semestre no encontrado'}, status=404)
+
 
 @login_required
 @role_required('Estudiante')
@@ -162,19 +174,41 @@ def guardar_matricula_estudiante(request):
 
 
 
-
 @login_required
 @role_required('Estudiante')
-def descargar_pdf_estudiante(request):
-    estudiante = get_object_or_404(Estudiante, usuario=request.user)
-    matriculas = Matricula.objects.filter(estudiante=estudiante).prefetch_related('matriculacurso_set')
+def descargar_pdf_estudiante(request, estudiante_id):
+    # Filtrar las matrículas del estudiante
+    matriculas = Matricula.objects.filter(estudiante_id=estudiante_id).prefetch_related('matriculacurso_set')
 
-    # Aquí va la lógica para crear el PDF como lo hacías antes.
+    # Obtener información del estudiante
+    estudiante = get_object_or_404(Estudiante, id=estudiante_id)
+
+    # Calcular créditos por semestre
+    creditos_por_semestre = {}
+    for matricula in matriculas:
+        total_creditos = 0
+        cursos = MatriculaCurso.objects.filter(matricula=matricula).prefetch_related('seccion__curso')
+        for matricula_curso in cursos:
+            total_creditos += matricula_curso.seccion.curso.creditos
+        
+        creditos_por_semestre[matricula.id] = total_creditos  
+
+    # Crear el objeto HttpResponse con el tipo de contenido adecuado
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="matricula_{estudiante.codigo}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="matricula_{estudiante_id}.pdf"'
 
-    # Generar el PDF y devolver la respuesta
-    # ...
+    # Renderizar el HTML desde el template, incluyendo creditos_por_semestre
+    html = render_to_string('matriculas/matricula_pdf.html', {
+        'matriculas': matriculas,
+        'estudiante': estudiante,
+        'creditos_por_semestre': creditos_por_semestre
+    })
+
+    # Crear el PDF a partir del HTML
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('Error al generar PDF')
 
     return response
 
