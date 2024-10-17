@@ -1,0 +1,47 @@
+<!-- cargar_usuarios_csv.html -->
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Cargar Usuarios{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="upload-container">
+        <form class="upload-form" method="POST" enctype="multipart/form-data">
+            <h2>Cargar Usuarios desde CSV</h2>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="csv_file">Subir archivo CSV</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+            </div>
+            <button type="submit">Cargar Usuarios</button>
+            <!-- Instrucciones -->
+    <div class="instructions">
+        <p>Por favor, sigue las siguientes instrucciones para cargar correctamente los usuarios:</p>
+        <ul>
+            <li>El archivo debe estar en formato CSV.</li>
+            <li>Los campos requeridos son: <strong>username</strong>, <strong>email</strong> y <strong>rol</strong>.</li>
+            <li>El campo <strong>rol</strong> debe ser "Estudiante" o "Administrador".</li>
+            <li>No borrar el encabezado que se muestra en la imagen.</li>
+            <li>No incluyas usuarios que ya existan en el sistema.</li>
+        </ul>
+        <img src="{% static 'images/usuarios_csv.jpg' %}" alt="Ejemplo CSV" class="instrucciones-imagen">
+        <!-- Botón de descarga de la plantilla CSV -->
+        <a href="{% static 'files/plantilla_usuarios.csv' %}" download class="btn btn-primary">
+            Descargar Plantilla CSV
+        </a>
+    </div>
+            {% if messages %}
+                <div class="message-list">
+                    {% for message in messages %}
+                        <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}

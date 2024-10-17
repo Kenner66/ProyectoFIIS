@@ -16,3 +16,6 @@ class UsuarioCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class CSVUploadForm(forms.Form):
+    file = forms.FileField(label='Seleccionar archivo CSV')

@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
@@ -7,12 +6,64 @@ from .decorators import role_required
 from estudiantes.models import Estudiante
 from django.contrib.auth.views import PasswordResetView
 from django.urls import reverse_lazy
-
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 # Create your view
+import csv
+from django.contrib.auth.hashers import make_password
+from django.contrib import messages
+from .forms import CSVUploadForm
+from .models import Usuario, Rol
+import secrets
+import string
+import io
+
+def generar_contraseña(length=10):
+    """Genera una contraseña aleatoria de longitud especificada."""
+    caracteres = string.ascii_letters + string.digits + string.punctuation
+    contraseña = ''.join(secrets.choice(caracteres) for _ in range(length))
+    return contraseña
 @login_required
-def home(request):
-    return render(request, "home.html")
+@role_required('Administrador')
+def cargar_usuarios_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')  # Usa get para evitar MultiValueDictKeyError
+        if not csv_file:
+            messages.error(request, 'Por favor, sube un archivo CSV.')
+            return render(request, 'cargar_usuarios_csv.html')
+
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'El archivo subido no es un archivo CSV.')
+            return render(request, 'cargar_usuarios_csv.html')
+
+        # Leer el archivo CSV
+        file_data = csv_file.read().decode('utf-8')
+        lines = file_data.splitlines()
+        reader = csv.DictReader(lines)
+
+        for row in reader:
+            username = row['username']
+            email = row['email']
+            rol_nombre = row['rol']
+
+            # Obtener el rol correspondiente
+            try:
+                rol = Rol.objects.get(nombre_rol=rol_nombre)
+            except Rol.DoesNotExist:
+                messages.error(request, f'El rol "{rol_nombre}" no existe.')
+                continue  # Saltar al siguiente registro si el rol no existe
+            
+            if Usuario.objects.filter(username=username).exists():
+                messages.warning(request, f'El usuario "{username}" ya existe y se omitirá.')
+                continue 
+            # Crear el nuevo usuario
+            usuario = Usuario(username=username, email=email, rol=rol)
+            usuario.set_password(generar_contraseña())  # Generar una contraseña
+            usuario.save()
+
+        messages.success(request, 'Usuarios cargados exitosamente.')
+
+    return render(request, 'cargar_usuarios_csv.html')
+
 
 @login_required
 @role_required('Administrador')

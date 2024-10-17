@@ -1,49 +1,51 @@
-{% extends 'base.html' %}
+    {% extends 'base.html' %}
 
-{% load static %}
+    {% load static %}
 
-{% block title %}Registrar Usuario{% endblock %}
+    {% block title %}Registrar Usuario{% endblock %}
 
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
-{% endblock %}
+    {% block extra_css %}
+        <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+    {% endblock %}
 
-{% block content %}
-    <div class="registration-container">
-        <form class="registration-form" method="POST">
-            <h2>Registro de Usuarios</h2>
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    {{ field.label_tag }}
-                    {% if field.name == 'rol' %}
-                        <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="select-role">
-                            <option value="" selected disabled>Seleccionar Rol</option>
-                            {% for value, label in field.field.choices %}
-                                {% if value != "" %}
-                                    <option value="{{ value }}">{{ label }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                    {% else %}
-                        {{ field }}
-                    {% endif %}
-                    {% if field.errors %}
-                        <div class="field-error">
-                            {% for error in field.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <button type="submit">Registrar</button>
+    {% block content %}
+        <div class="registration-container">
+            <form class="registration-form" method="POST">
+                <h2>Registro de Usuarios</h2>
+                
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {% if field.name == 'rol' %}
+                            <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="select-role">
+                                <option value="" selected disabled>Seleccionar Rol</option>
+                                {% for value, label in field.field.choices %}
+                                    {% if value != "" %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="field-error">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit">Registrar</button>
 
-            {% if form.non_field_errors %}
-                <div class="error-list">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-        </form>
-    </div>
-{% endblock %}
+                {% if form.non_field_errors %}
+                    <div class="error-list">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+            </form>
+            <a href="{% url 'cargar_usuarios_csv' %}" class="btn btn-primary">Cargar Usuarios CSV</a>
+        </div>
+    {% endblock %}
