@@ -50,7 +50,7 @@
                 </a>                
                 <a href="{% url 'signout' %}">  <!-- Aquí estaba mal cerrado el tag -->
                     <span class="material-icons-sharp">logout</span>
-                    <h3>Sign Out</h3>
+                    <h3>Cerrar Sesión</h3>
                 </a>
             </div>
         </aside>
@@ -78,10 +78,13 @@
                         {% endif %}
                         <small class="text-muted">Estudiante</small>
                     </div>
+                    <div class="profile-photo">
+                        <img src="/static/assets/perfil_admin.png" alt="perfil_admin">
+                    </div>
                 </div>
         </div>
         <!--Fin de Barra Lateral Derecha-->
     </div>
-    
+    <script src="{% static 'js/base.js' %}"></script>
 </body>
 </html>

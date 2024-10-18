@@ -1,23 +1,26 @@
 {% extends 'base_alumnos.html' %}
 
 {% block content %}
-<div class="container">
-    <h2>Cursos Disponibles por Ciclo</h2>
-    <div class="row">
-        {% for ciclo, cursos in cursos_por_ciclo.items %}
-            <div class="col-12">
-                <button class="btn btn-primary" onclick="toggleCursos('ciclo{{ ciclo }}')">Ciclo {{ ciclo }}</button>
-                <div id="ciclo{{ ciclo }}" class="curso-list" style="display: none;">
-                    <ul>
-                        {% for curso in cursos %}
-                            <li>{{ curso.nombre }} ({{ curso.creditos }} créditos)</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endfor %}
+<div >
+    <div class="title-section">
+        <h2>Cursos Disponibles por Ciclo</h2>
     </div>
+    <div class="cycles-container">
+    {% for ciclo, cursos in cursos_por_ciclo.items %}
+        <button class="btn btn-primary" onclick="toggleCursos('ciclo{{ ciclo }}')">
+            Ciclo {{ ciclo }}
+        </button>
+        <div id="ciclo{{ ciclo }}" class="curso-list" style="display: none;">
+            <ul>
+                {% for curso in cursos %}
+                    <li>{{ curso.nombre }} ({{ curso.creditos }} créditos)</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
 </div>
+</div>
+
 
 <script>
     function toggleCursos(cicloId) {
@@ -29,4 +32,72 @@
         }
     }
 </script>
+
+<style>
+
+    .title-section {
+        margin-bottom: 20px;
+    }
+    
+    .container h2 {
+        color: #333;
+        font-size: 20px;
+        font-weight: normal;
+        margin: 0;
+        padding-bottom: 8px;
+        border-bottom: 3px solid #FF5722;
+    }
+    
+    .cycles-container {
+        margin-top: 20px;
+    }
+    
+    .btn.btn-primary {
+        background-color: #FF5722;
+        border: none;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 4px;
+        width: 100%;
+        text-align: left;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin-bottom: 10px;
+    }
+    
+    .btn.btn-primary:hover {
+        background-color: #f4511e;
+    }
+    
+    .curso-list {
+        background-color: #f8f9fa;
+        margin-top: 10px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .curso-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .curso-list li {
+        padding: 12px 20px;
+        border-bottom: 1px solid #e9ecef;
+        color: #495057;
+        font-size: 14px;
+    }
+    
+    .curso-list li:last-child {
+        border-bottom: none;
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+    }
+</style>
 {% endblock %}

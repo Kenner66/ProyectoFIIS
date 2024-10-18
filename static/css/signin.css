@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif; 
-    background-image: url("/static/assets/fondo-1.png") ;
+    background-image: url("/static/assets/fondo-1.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -12,7 +12,7 @@ body {
     height: 100vh;
 }
 
-body:before{
+body:before {
     content: "";
     width: 100%;
     min-height: 100vh;
@@ -30,14 +30,13 @@ body:before{
     left: 50%;
     transform: translateX(-50%);
     z-index: 1; 
-    background-image: url("/static/assets/logo_unfv.png"); 
+    background-image: url("/static/assets/logo_unfv.png");
     background-size: contain; 
-    background-position: center; 
-    background-repeat: no-repeat; 
+    background-position: center;
+    background-repeat: no-repeat;
     width: 400px;
     height: 160px;
 }
-
 
 form {
     top: 40px; 
@@ -49,7 +48,6 @@ form {
     position: relative;
 }
 
-
 input {
     width: 100%;
     padding: 10px;
@@ -58,7 +56,6 @@ input {
     border-radius: 4px;
     box-sizing: border-box;
 }
-
 
 button[type="submit"] {
     width: 100%;
@@ -75,6 +72,19 @@ button[type="submit"]:hover {
     background-color: #ffbb00;
 }
 
+a {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #ff7b00;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #ffbb00;
+}
 
 p[style*="color: red"] {
     color: #ff0000;

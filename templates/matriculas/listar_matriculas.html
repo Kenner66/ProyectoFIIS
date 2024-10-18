@@ -1,20 +1,27 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Lista de Matrículas{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Lista de Matrículas</h2>
-<a href="{% url 'crear_matricula' %}">Agregar Matrícula</a>
-<table>
-    <thead>
-        <tr>
-            <th>Estudiante</th>
-            <th>Semestres</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for estudiante, data in matriculas_info.items %}
+<div class="student-list-container">
+    <h2>Lista de Matrículas</h2>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Semestres</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estudiante, data in matriculas_info.items %}
         <tr>
             <td>{{ data.info_personal.nombre }} {{ data.info_personal.apellido }}</td>
             <td>
@@ -23,10 +30,10 @@
                 {% for matricula in data.matriculas %}
                     <li>
                         {{ matricula.semestre.año }} - {{ matricula.semestre.periodo }}
-                        <a href="{% url 'ver_matricula' matricula.id %}">Ver Matrícula</a>
+                        <a href="{% url 'ver_matricula' matricula.id %}" class="btn-elim btn-edit-elim">Ver Matrícula</a>
                         <form method="POST" action="{% url 'eliminar_matricula' matricula.id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta matrícula?')">Eliminar</button>
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta matrícula?')" class="btn-elim btn-edit-elim">Eliminar</button>
                         </form>
                     </li>
                 {% endfor %}
@@ -34,8 +41,7 @@
 
             </td>
             <td>
-                <!-- Opciones de acciones si se requieren -->
-                <a href="{% url 'descargar_pdf' data.matriculas.0.estudiante.id %}">Descargar PDF</a>
+                <a href="{% url 'descargar_pdf' data.matriculas.0.estudiante.id %}" class="btn-2 btn-add-2" >Descargar PDF</a>
             </td>
         </tr>
         {% empty %}
@@ -43,8 +49,11 @@
             <td colspan="3">No hay matrículas disponibles.</td>
         </tr>
         {% endfor %}
-    </tbody>
-</table>
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'crear_matricula' %}" class="btn btn-add">Agregar Matrícula</a>
+</div>
 
 {% if messages %}
     <ul>
@@ -54,3 +63,5 @@
     </ul>
 {% endif %}
 {% endblock %}
+
+

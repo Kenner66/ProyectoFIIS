@@ -5,17 +5,34 @@
 {% block title %}Editar Semestre{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/semestre_form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="semestre-form-container">
-    <h2>Editar Semestre: {{ semestre }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-add">Guardar cambios</button>
-    </form>
-    <a href="{% url 'listar_semestres' %}" class="btn btn-back">Volver al listado</a>
-</div>
+    <div class="registration-container">
+        <form class="registration-form" method="POST">
+            <h2>Editar Semestre: {{ semestre }}</h2>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    {% if field.name == 'activo' %}
+                        <label for="{{ field.id_for_label }}">
+                            {{ field }} {{ field.label }}
+                        </label>
+                    {% else %}
+                        {{ field.label_tag }}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-add">Guardar cambios</button>
+            <a href="{% url 'listar_semestres' %}" class="btn-2 btn-add-2">Volver a la lista</a>
+        </form>
+    </div>
 {% endblock %}

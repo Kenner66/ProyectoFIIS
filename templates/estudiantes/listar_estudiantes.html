@@ -51,8 +51,9 @@
             </tbody>
         </table>
     </div>
-    <button type="submit"><a href="{% url 'agregar_estudiante'%}" class="btn btn-add">Agregar Estudiante</a></button>
-    <a href="{% url 'cargar_estudiantes_csv' %}" class="btn btn-primary">Cargar Estudiantes CSV</a>
+    <a href="{% url 'agregar_estudiante'%}" class="btn btn-add">Agregar Estudiante</a>
+    <a href="{% url 'cargar_estudiantes_csv' %}" class="btn btn-add btn-carga">Cargar Usuarios CSV</a>
+    
 </div>
 {% endblock %}
 

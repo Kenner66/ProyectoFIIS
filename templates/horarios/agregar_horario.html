@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Agregar Horario{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="registration-container">
-    <h2>Agregar Horario</h2>
-    <form method="POST" id="horarioForm">
-        {% csrf_token %}
+    <div class="registration-container">
+        <form class="registration-form" method="POST">
+            <h2>Agregar Horario</h2>
+            {% csrf_token %}
         <div id="horarioContainer">
             <div class="horarioEntry">
                 <label for="profesor">Profesor:</label>
@@ -33,13 +39,15 @@
             </div>
         </div>
 
-        <button type="button" id="addHorario">+ Agregar otro día</button>
+        <button type="button" id="addHorario" class="otro_dia">+ Agregar otro día</button>
         <button type="submit">Guardar</button>
-        <a href="{% url 'listar_horarios' %}" class="btn btn-add">Regresar a la lista de horarios</a>
-    </form>
-</div>
+        <button type="submit_2"><a href="{% url 'listar_horarios' %}" class="btn">Regresar a la lista de horarios</a></button>
 
-<script>
+            
+  </form>
+  </div>
+
+  <script>
     document.getElementById('addHorario').addEventListener('click', function() {
         var newEntry = document.createElement('div');
         newEntry.classList.add('horarioEntry');
@@ -66,3 +74,4 @@
     });
 </script>
 {% endblock %}
+

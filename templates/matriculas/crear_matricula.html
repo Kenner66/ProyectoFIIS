@@ -1,4 +1,12 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Crear matrícula{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/crear_matricula.css' %}">
+{% endblock %}
 
 {% block content %}
 <h2>Crear matrícula</h2>
@@ -47,7 +55,7 @@
 </div>
 
 <!-- Secciones Seleccionadas -->
-<div id="secciones-seleccionadas" class="mt-4">
+<div id="secciones-seleccionadas" class="mt-4" >
     <h4>Secciones Añadidas</h4>
     <table class="table table-bordered">
         <thead>
@@ -122,47 +130,51 @@
 
     });
 
-let totalCreditos = 0;  
-function añadirSeccion(seccionId) {
-    const codigoEstudiante = document.getElementById('codigo_estudiante').value;
-    // Hacer la petición para validar la sección
-    fetch(`/matriculas/validar_seccion/${codigoEstudiante}/${seccionId}/`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            if (data.error) {
-                alert(data.error);  // Mostrar error si no cumple con los requisitos
-            } else {
-                // Comprobar si el curso ya fue añadido
-                const seccionLista = document.getElementById('secciones-seleccionadas');
-                const seccionesExistentes = Array.from(seccionLista.getElementsByTagName('div')); // Cambia a 'div' si estás añadiendo un 'div'
-                const cursoYaAñadido = seccionesExistentes.some(element => element.innerText.includes(data.curso_nombre));
-
-                if (cursoYaAñadido) {
-                    alert(`Ya has añadido una sección del curso ${data.curso_nombre}. No puedes inscribir en múltiples secciones del mismo curso.`);
+    let totalCreditos = 0;  
+    function añadirSeccion(seccionId) {
+        const codigoEstudiante = document.getElementById('codigo_estudiante').value;
+        // Hacer la petición para validar la sección
+        fetch(`/matriculas/validar_seccion/${codigoEstudiante}/${seccionId}/`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.error) {
+                    alert(data.error);  // Mostrar error si no cumple con los requisitos
                 } else {
-                    alert(`Sección añadida exitosamente.`);
-                    const nuevoElemento = document.createElement('div');
-                    nuevoElemento.setAttribute('data-seccion-id', seccionId); // Agregar el data-seccion-id
-                    nuevoElemento.setAttribute('data-creditos', data.creditos);  // Almacenar los créditos en el DOM
-
-                    nuevoElemento.innerHTML = `Curso: ${data.curso_nombre} - Sección: ${data.seccion_nombre} - Créditos: ${data.creditos}
-                    <button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button>`;
-                    
-                    seccionLista.appendChild(nuevoElemento);
-                    
-                    totalCreditos += data.creditos;
-                    document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`;
-                    actualizarEstadoGuardar(); // Actualizar estado del botón de guardar
-                    // Verificar si se ha superado el límite de 22 créditos
-                    if (totalCreditos > 22) {
-                        alert('No puedes matricular más de 22 créditos.');
+                    // Comprobar si el curso ya fue añadido
+                    const seccionLista = document.getElementById('secciones-seleccionadas');
+                    const seccionesExistentes = Array.from(seccionLista.getElementsByTagName('div')); // Cambia a 'div' si estás añadiendo un 'div'
+                    const cursoYaAñadido = seccionesExistentes.some(element => element.innerText.includes(data.curso_nombre));
+    
+                    if (cursoYaAñadido) {
+                        alert(`Ya has añadido una sección del curso ${data.curso_nombre}. No puedes inscribir en múltiples secciones del mismo curso.`);
+                    } else {
+                        alert(`Sección añadida exitosamente.`);
+                        const nuevoElemento = document.createElement('div');
+                        nuevoElemento.setAttribute('data-seccion-id', seccionId); // Agregar el data-seccion-id
+                        nuevoElemento.setAttribute('data-creditos', data.creditos);  // Almacenar los créditos en el DOM
+                            
+                        nuevoElemento.innerHTML = `
+                        <td>${data.curso_nombre}</td>
+                        <td>${data.seccion_nombre}</td>
+                        <td>${data.creditos}</td>
+                        <td><button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button></td>
+                    `;
+                        
+                        seccionLista.appendChild(nuevoElemento);
+                        
+                        totalCreditos += data.creditos;
+                        document.getElementById('total-creditos').innerText = `Total de Créditos: ${totalCreditos}`;
+                        actualizarEstadoGuardar(); // Actualizar estado del botón de guardar
+                        // Verificar si se ha superado el límite de 22 créditos
+                        if (totalCreditos > 22) {
+                            alert('No puedes matricular más de 22 créditos.');
+                        }
                     }
                 }
-            }
-        })
-        .catch(error => console.error('Error al validar la sección:', error));
-}
+            })
+            .catch(error => console.error('Error al validar la sección:', error));
+    }
 
 
 function guardarMatricula() {
@@ -275,5 +287,103 @@ function guardarMatriculaAutomatica() {
     }
 }
 
+// Función para añadir una sección
+function añadirSeccion(seccionId) {
+    const codigoEstudiante = document.getElementById('codigo_estudiante').value;
+    // Hacer la petición para validar la sección
+    fetch(`/matriculas/validar_seccion/${codigoEstudiante}/${seccionId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);  // Mostrar error si no cumple con los requisitos
+            } else {
+                // Comprobar si el curso ya fue añadido
+                const seccionesLista = document.getElementById('secciones-seleccionadas-lista');
+                const seccionesExistentes = Array.from(seccionesLista.getElementsByTagName('tr'));
+                const cursoYaAñadido = seccionesExistentes.some(row => row.cells[0].textContent === data.curso_nombre);
+
+                if (cursoYaAñadido) {
+                    alert(`Ya has añadido una sección del curso ${data.curso_nombre}. No puedes inscribir en múltiples secciones del mismo curso.`);
+                } else {
+                    const nuevaFila = seccionesLista.insertRow();
+                    nuevaFila.setAttribute('data-seccion-id', seccionId);
+                    nuevaFila.setAttribute('data-creditos', data.creditos);
+                    
+                    nuevaFila.innerHTML = `
+                        <td>${data.curso_nombre}</td>
+                        <td>${data.seccion_nombre}</td>
+                        <td>${data.creditos}</td>
+                        <td><button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button></td>
+                    `;
+                    
+                    actualizarTotalCreditos();
+                }
+            }
+        })
+        .catch(error => console.error('Error al validar la sección:', error));
+}
+
+// Función para eliminar una sección
+function eliminarSeccion(boton, creditos) {
+    const fila = boton.closest('tr');
+    fila.remove();
+    actualizarTotalCreditos();
+}
+
+// Función para actualizar el total de créditos
+function actualizarTotalCreditos() {
+    const filas = document.querySelectorAll('#secciones-seleccionadas-lista tr');
+    let total = 0;
+    filas.forEach(fila => {
+        total += parseInt(fila.getAttribute('data-creditos'), 10);
+    });
+    document.getElementById('total-creditos').innerText = `Total de Créditos: ${total}`;
+    
+    if (total > 22) {
+        alert('No puedes matricular más de 22 créditos.');
+    }
+}
+
+// Función para guardar la matrícula
+function guardarMatricula() {
+    const codigoEstudiante = document.getElementById('codigo_estudiante').value;
+    const semestreId = document.getElementById('semestre-select').value;
+    
+    // Obtener las secciones seleccionadas
+    const seccionesSeleccionadas = Array.from(document.querySelectorAll('#secciones-seleccionadas-lista tr')).map(row => ({
+        seccion_id: row.getAttribute('data-seccion-id'),
+        semestre_id: semestreId
+    }));
+
+    // Crear un FormData para enviar los datos
+    const formData = new FormData();
+    formData.append('codigo_estudiante', codigoEstudiante);
+    formData.append('semestre_id', semestreId);
+    
+    // Añadir todas las secciones seleccionadas al FormData
+    seccionesSeleccionadas.forEach(seccion => {
+        formData.append('secciones_seleccionadas[]', seccion.seccion_id);
+        formData.append('semestre_id[]', seccion.semestre_id);
+    });
+
+    // Enviar los datos al servidor usando fetch
+    fetch('/matriculas/guardar_matricula/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.success);
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => console.error('Error al guardar la matrícula:', error));
+}
 </script>
 {% endblock %}
+

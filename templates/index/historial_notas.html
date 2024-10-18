@@ -1,23 +1,39 @@
 {% extends 'base_alumnos.html' %}
 
+{% load static %}
+
+{% block title %}Historial de Notas{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Historial de Notas</h2>
-<table>
-    <tr>
-        <th>Curso</th>
-        <th>Nota</th>
-        <th>Semestre</th>
-    </tr>
-    {% for nota in historial %}
+<div class="student-list-container">
+    <h2>Historial de Notas</h2>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Nota</th>
+                    <th>Semestre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nota in historial %}
         <tr>
             <td>{{ nota.curso.nombre }}</td>
             <td>{{ nota.nota }}</td>
             <td>{{ nota.semestre }}</td>
         </tr>
-    {% empty %}
+        {% empty %}
         <tr>
             <td colspan="3">No hay notas registradas.</td>
         </tr>
-    {% endfor %}
-</table>
+        {% endfor %}
+            </tbody>
+        </table>
+    </div>  
+</div>
 {% endblock %}

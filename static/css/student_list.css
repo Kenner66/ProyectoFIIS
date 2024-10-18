@@ -86,9 +86,9 @@ body {
     color: #fff;
     padding: 12px 20px;
     font-size: 16px;
-    margin-top: 20px;
     display: block;
-    width: 100%;
+    width: 20%;
+    margin: auto;
 }
 
 .btn:hover {
@@ -104,7 +104,6 @@ body {
     text-decoration: none;
     transition: background-color 0.3s;
     text-align: center;
-    justify-content: center;
 }
 .btn-add-2{
     background-color: #F25C05;
@@ -120,6 +119,27 @@ body {
     opacity: 0.8;
 }
 
+.btn-carga{
+    margin-top: 10px;
+}
+
+.btn-elim{
+    display: inline-block;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    text-align: center;
+    margin: 10px;
+}
+
+.btn-edit-elim{
+    background-color: #ffc107;
+    color: #000;
+}
 
 @media (max-width: 768px) {
     .student-table {

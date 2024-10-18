@@ -15,9 +15,10 @@
             <label for="csv_file">Seleccionar archivo CSV:</label>
             <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
         </div>
-        <button type="submit">Cargar Estudiantes</button>
+        <button type="submit" >Cargar Estudiantes</button>
     </form>
     <div class="instructions">
+        <br></br>
         <p>Instrucciones para la carga masiva de estudiantes</p>
             <ol>
                 <li>Asegúrate de que los estudiantes ya existan como usuarios en el sistema con el <strong>username</strong> correspondiente.</li>
@@ -27,7 +28,7 @@
             </ol>
         <img src="{% static 'images/estudiantes_csv.jpg' %}" alt="Ejemplo CSV" class="instrucciones-imagen">
         <!-- Botón de descarga de la plantilla CSV -->
-        <a href="{% static 'files/plantilla_estudiantes.csv' %}" download class="btn btn-primary">
+        <a href="{% static 'files/plantilla_estudiantes.csv' %}" download class="btn btn-add btn-carga">
             Descargar Plantilla CSV
         </a>
     </div>

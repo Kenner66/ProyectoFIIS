@@ -1,9 +1,21 @@
 {% extends 'base_alumnos.html' %}
 
+{% load static %}
+
+{% block title %}Perfil del Estudiante{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Perfil de {{ informacion_personal.nombre }} {{ informacion_personal.apellido }}</h2>
-<p>DNI: {{ informacion_personal.dni }}</p>
-<p>Fecha de Nacimiento: {{ informacion_personal.fecha_nacimiento }}</p>
-<p>Código: {{ estudiante.codigo }}</p>
-<p>Carrera: {{ estudiante.carrera }}</p>
+<div class="registration-container">
+  <form class="registration-form" method="POST" style="margin-left:500px">
+    <h2>Perfil de: "{{ informacion_personal.nombre }} {{ informacion_personal.apellido }}"</h2>
+    <p style="margin-top:10px; font-size:14px"><span style="font-weight:bolder; color: black; font-size:14px">DNI:</span> {{ informacion_personal.dni }}</p>
+    <p style="margin-top:10px; font-size:14px"><span style="font-weight:bolder; color: black; font-size:14px">Fecha de Nacimiento:</span> {{ informacion_personal.fecha_nacimiento }}</p>
+    <p style="margin-top:10px; font-size:14px"><span style="font-weight:bolder; color: black; font-size:14px">Código:</span> {{ estudiante.codigo }}</p>
+    <p style="margin-top:10px; font-size:14px"><span style="font-weight:bolder; color: black; font-size:14px">Carrera:</span> {{ estudiante.carrera }}</p>
+  </form>
+</div>
 {% endblock %}

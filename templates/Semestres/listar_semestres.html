@@ -5,15 +5,14 @@
 {% block title %}Lista de Semestres{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/semestre_list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="semestre-list-container">
+<div class="student-list-container">
     <h2>Lista de Semestres</h2>
-    <a href="{% url 'agregar_semestre' %}" class="btn btn-add">Agregar Semestre</a>
     <div class="table-responsive">
-        <table class="semestre-table">
+        <table class="student-table">
             <thead>
                 <tr>
                     <th>Año</th>
@@ -31,14 +30,15 @@
                     <td>{{ semestre.get_periodo_display }}</td>
                     <td>{{ semestre.fecha_inicio }}</td>
                     <td>{{ semestre.fecha_fin }}</td>
-                    <td>{{ semestre.estado|yesno:"Activo,Inactivo" }}</td>
-                    <td>
-                        <a href="{% url 'editar_semestre' semestre.id %}" class="btn-2 btn-add-2">Editar</a>
+                    <td>{{ semestre.estado|yesno:"Sí,No" }}</td>
+                    <td class="actions">
+                        <a href="{% url 'editar_semestre' semestre.pk %}" class="btn btn-edit">Editar</a> 
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    <a href="{% url 'agregar_semestre' %}" class="btn btn-add">Agregar Semestre</a>
 </div>
 {% endblock %}

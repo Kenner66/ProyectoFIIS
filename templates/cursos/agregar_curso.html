@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Agregar Curso{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
 
 {% block content %}
 <div class="registration-container">
@@ -22,8 +29,8 @@
             </div>
         </div>
 
-        <button type="submit">Agregar</button>
-        <button><a href="{% url 'listar_cursos' %}">Volver a la lista de cursos</a></button>
+        <button type="submit" class="btn btn-add">Agregar</button>
+        <button class="btn btn-add btn-carga" ><a href="{% url 'listar_cursos' %}">Volver a la lista de cursos</a></button>
     </form>
 </div>
 

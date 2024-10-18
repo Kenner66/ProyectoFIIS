@@ -39,6 +39,7 @@
                     </div>
                 {% endfor %}
                 <button type="submit">Registrar</button>
+                <a href="{% url 'cargar_usuarios_csv' %}" class="button button-primary">Cargar Usuarios CSV</a>
 
                 {% if form.non_field_errors %}
                     <div class="error-list">
@@ -46,6 +47,6 @@
                     </div>
                 {% endif %}
             </form>
-            <a href="{% url 'cargar_usuarios_csv' %}" class="btn btn-primary">Cargar Usuarios CSV</a>
+            
         </div>
     {% endblock %}

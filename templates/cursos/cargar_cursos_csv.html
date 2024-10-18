@@ -1,20 +1,15 @@
-{% extends 'base.html' %}
-{% load static %}
 
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
 {% block title %}Cargar Cursos{% endblock %}
 
 {% block content %}
 <div class="upload-container">
     <h2>Cargar Cursos desde CSV</h2>
-    
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
@@ -23,5 +18,23 @@
         </div>
         <button type="submit">Cargar Cursos</button>
     </form>
+    <div class="instructions">
+        <br></br>
+        <p>Instrucciones para la carga masiva de Cursos</p>
+            <ol>
+                <li>Asegúrate de que los cursos ya existan en el sistema correspondiente.</li>
+                <li>El archivo CSV debe contener las siguientes columnas: <strong>código, nombre, Descripcion, Creditos, Ciclo y Pre requisitos</strong>.</li>
+                <li>Descarga la plantilla de ejemplo si lo necesitas.</li>
+                <li>Selecciona tu archivo CSV y presiona <strong>Cargar</strong> para cargar los cursos en el sistema.</li>
+            </ol>
+    </div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </div>
 {% endblock %}
+

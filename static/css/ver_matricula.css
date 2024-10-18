@@ -1,0 +1,60 @@
+/* Estilos solo para la sección de detalles de matrícula */
+.detalle-matricula {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 340px;
+    margin-top: 150px;
+}
+
+.detalle-matricula h2 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.detalle-matricula p {
+    font-size: 1.1rem;
+    color: #555;
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.detalle-matricula strong {
+    color: #F25C05;
+}
+
+.detalle-matricula ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.detalle-matricula ul li {
+    background-color: #f1f1f1;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 5px solid #F25C05;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.detalle-matricula a {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #F25C05;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.detalle-matricula a:hover {
+    opacity: 0.5;
+}

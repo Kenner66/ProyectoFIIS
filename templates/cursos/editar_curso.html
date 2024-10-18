@@ -14,8 +14,8 @@
             <h2>Editar Curso: {{ form.instance.nombre }}</h2>
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Guardar Cambios</button>
-            <button type="button"><a href="{% url 'listar_cursos' %}">Volver a la lista de cursos</a></button>
+            <button type="submit" class="btn btn-add">Guardar Cambios</button>
+            <button type="button" class="btn btn-add btn-carga"><a href="{% url 'listar_cursos' %}">Volver a la lista de cursos</a></button>
         </form>
     </div>
 
