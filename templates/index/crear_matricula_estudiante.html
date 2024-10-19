@@ -1,7 +1,15 @@
-{% extends "base_alumnos.html" %}
+{% extends 'base_alumnos.html' %}
+
+{% load static %}
+
+{% block title %}Crear matrícula{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/crear_matricula_estudiante.css' %}">
+{% endblock %}
 
 {% block content %}
-<h2>Crear matrícula</h2>
+<h2>Crear Matrícula de Estudiante</h2>
 
 <!-- Información del Estudiante -->
 <div id="info-estudiante" class="mt-4">
@@ -105,7 +113,7 @@ function añadirSeccion(seccionId) {
                         <td>${data.curso_nombre}</td>
                         <td>${data.seccion_nombre}</td>
                         <td>${data.creditos}</td>
-                        <td><button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button></td>
+                        <td><button onclick="eliminarSeccion(this, ${data.creditos})" style="background:#28a745">Eliminar</button></td>
                     `;
                     seccionLista.appendChild(nuevoElemento);
                     
