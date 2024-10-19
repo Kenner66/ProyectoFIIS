@@ -25,7 +25,7 @@ def cargar_cursos_csv(request):
             return render(request, 'cursos/cargar_cursos_csv.html')
 
         try:
-            file_data = csv_file.read().decode('utf-8-sig')  # Para manejar posibles caracteres especiales
+            file_data = csv_file.read().decode('latin-1')  # Para manejar posibles caracteres especiales
             lines = file_data.splitlines()
             reader = csv.DictReader(lines)
 
