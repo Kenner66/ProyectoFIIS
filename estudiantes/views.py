@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required 
 from django.contrib import messages
 from usuarios.models import Usuario
+from django.core.paginator import Paginator
 import csv
 
 @login_required
@@ -72,7 +73,10 @@ def cargar_estudiantes_csv(request):
 @login_required
 @role_required('Administrador')
 def listar_estudiantes(request):
-    estudiantes = Estudiante.objects.all()  # Obtiene todos los estudiantes
+    estudiantes = Estudiante.objects.all().order_by('id') # Obtiene todos los estudiantes
+    paginator = Paginator(estudiantes, 5) 
+    page_number = request.GET.get('page')
+    estudiantes = paginator.get_page(page_number)
     return render(request, 'estudiantes/listar_estudiantes.html', {'estudiantes': estudiantes})
 
 @login_required
