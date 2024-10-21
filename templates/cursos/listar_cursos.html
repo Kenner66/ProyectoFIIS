@@ -37,6 +37,23 @@
             </tbody>
         </table>
     </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if cursos.has_previous %}
+                <a href="?page=1">&laquo; primera</a>
+                <a href="?page={{ cursos.previous_page_number }}">anterior</a>
+            {% endif %}
+    
+            <span class="current">
+                Página {{ cursos.number }} de {{ cursos.paginator.num_pages }}.
+            </span>
+    
+            {% if cursos.has_next %}
+                <a href="?page={{ cursos.next_page_number }}">siguiente</a>
+                <a href="?page={{ cursos.paginator.num_pages }}">última &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
     <a href="{% url 'agregar_curso' %}" class="btn btn-add">Agregar Curso</a>
     <a href="{% url 'cargar_cursos_csv' %}" class="btn btn-add btn-carga">Cargar Cursos CSV</a>
 </div>

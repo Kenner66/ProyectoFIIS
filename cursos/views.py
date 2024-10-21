@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 import csv
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-
+from django.core.paginator import Paginator
 
 @login_required
 @role_required('Administrador')
@@ -66,7 +66,10 @@ def cargar_cursos_csv(request):
 @login_required
 @role_required('Administrador')
 def listar_cursos(request):
-    cursos = Curso.objects.all()
+    cursos = Curso.objects.all().order_by('ciclo')
+    paginator = Paginator(cursos, 8) 
+    page_number = request.GET.get('page')
+    cursos = paginator.get_page(page_number)
     return render(request, 'cursos/listar_cursos.html', {'cursos': cursos})
 
 @login_required
