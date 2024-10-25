@@ -120,6 +120,8 @@ def validar_seccion_estudiante(request, seccion_id):
     if historial and historial.nota >= 11:
         return JsonResponse({'error': f'El estudiante ya aprobó el curso {curso.nombre}.'})
 
+    if seccion.cupos_totales <= 0:
+        return JsonResponse({'error': f'No hay cupos disponibles para la sección {seccion.nombre} del curso {curso.nombre}.'})
     # Obtener las secciones seleccionadas de la sesión
     secciones_seleccionadas_ids = request.session.get('secciones_seleccionadas', [])
     secciones_seleccionadas = Seccion.objects.filter(id__in=secciones_seleccionadas_ids)
@@ -151,6 +153,8 @@ def validar_seccion_estudiante(request, seccion_id):
         'creditos': seccion.curso.creditos,
     })
 
+from django.db import transaction
+
 @login_required
 @role_required('Estudiante')
 def guardar_matricula_estudiante(request):
@@ -176,23 +180,37 @@ def guardar_matricula_estudiante(request):
         if total_creditos > 22:
             return JsonResponse({'error': f'No puedes matricular más de 22 créditos. Créditos seleccionados: {total_creditos}.'})
 
-        # Crear o obtener la matrícula para el semestre seleccionado
-        matricula, created = Matricula.objects.get_or_create(
-            estudiante=estudiante,
-            semestre_id=semestre_id,
-        )
+        try:
+            # Iniciar una transacción
+            with transaction.atomic():
+                # Crear o obtener la matrícula para el semestre seleccionado
+                matricula, created = Matricula.objects.get_or_create(
+                    estudiante=estudiante,
+                    semestre_id=semestre_id,
+                )
 
-        # Asignar las secciones seleccionadas a la matrícula
-        for seccion_id in secciones_seleccionadas_ids:
-            seccion = get_object_or_404(Seccion, id=seccion_id)
-            if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
-                MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
+                # Asignar las secciones seleccionadas a la matrícula
+                for seccion_id in secciones_seleccionadas_ids:
+                    seccion = get_object_or_404(Seccion, id=seccion_id)
 
-        return JsonResponse({'success': 'Matrículas guardadas correctamente.'})
+                    # Validar que la sección tenga cupos disponibles
+                    if seccion.cupos_totales <= 0:
+                        return JsonResponse({'error': f'No hay cupos disponibles en la sección {seccion.nombre}.'})
+
+                    # Crear la relación entre la matrícula y la sección si no existe
+                    if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
+                        MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
+
+                        # Disminuir el número de cupos disponibles
+                        seccion.cupos_totales -= 1
+                        seccion.save()
+
+            return JsonResponse({'success': 'Matrículas guardadas correctamente.'})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
 
     return JsonResponse({'error': 'Método no permitido.'})
-
-
 
 @login_required
 @role_required('Estudiante')

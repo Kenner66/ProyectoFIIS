@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required
 from django.contrib import messages
 from datetime import datetime
-
+from django.core.paginator import Paginator
 
 @login_required
 @role_required('Administrador')
@@ -99,7 +99,10 @@ def editar_horario(request, horario_id):
 @login_required
 @role_required('Administrador')
 def listar_secciones(request):
-    secciones = Seccion.objects.all()
+    secciones = Seccion.objects.all().order_by('curso__ciclo','nombre')
+    paginator = Paginator(secciones, 8) 
+    page_number = request.GET.get('page')
+    secciones = paginator.get_page(page_number)
     return render(request, 'secciones/listar_secciones.html', {'secciones': secciones})
 
 @login_required

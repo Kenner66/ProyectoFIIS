@@ -39,13 +39,27 @@ def ver_matricula(request, matricula_id):
 @login_required 
 @role_required('Administrador')
 def eliminar_matricula(request, matricula_id):
+    # Obtener la matrícula a eliminar
     matricula = get_object_or_404(Matricula, id=matricula_id)
-    # Eliminar la matrícula y los cursos asociados
+
     if request.method == 'POST':
+        # Obtener las secciones asociadas a la matrícula
+        matricula_cursos = MatriculaCurso.objects.filter(matricula=matricula)
+
+        # Aumentar los cupos de cada sección asociada
+        for matricula_curso in matricula_cursos:
+            seccion = matricula_curso.seccion
+            seccion.cupos_totales += 1
+            seccion.save()  # Guardar los cambios en la base de datos
+
+        # Eliminar la matrícula y los cursos asociados
         matricula.delete()
-    # Añadir un mensaje de éxito
+
+        # Añadir un mensaje de éxito
         return redirect('listar_matriculas')
+
     return HttpResponse("Método no permitido", status=405)
+
 
 @login_required
 @role_required('Administrador')
@@ -150,6 +164,8 @@ def validar_seccion(request, codigo_estudiante, seccion_id):
         if historial and historial.nota >= 11:  # Si ya aprobó el curso
             return JsonResponse({'error': f'El estudiante ya aprobó el curso {curso.nombre}.'})
 
+        if seccion.cupos_totales <= 0:
+            return JsonResponse({'error': f'No hay cupos disponibles para la sección {seccion.nombre} del curso {curso.nombre}.'})
         # Obtener la lista de secciones seleccionadas de la sesión
         secciones_seleccionadas_ids = request.session.get('secciones_seleccionadas', [])
         secciones_seleccionadas = Seccion.objects.filter(id__in=secciones_seleccionadas_ids)
@@ -188,6 +204,7 @@ def validar_seccion(request, codigo_estudiante, seccion_id):
             'curso_nombre': curso.nombre,
             'seccion_nombre': seccion.nombre,
             'creditos': seccion.curso.creditos,
+            'cupos':seccion.cupos_totales
         })
 
     except Estudiante.DoesNotExist:
@@ -195,13 +212,16 @@ def validar_seccion(request, codigo_estudiante, seccion_id):
     except Seccion.DoesNotExist:
         return JsonResponse({'error': 'Sección no encontrada.'})
 
+from django.db import transaction
+
 @login_required
 @role_required('Administrador')
 def guardar_matricula(request):
     if request.method == 'POST':
         codigo_estudiante = request.POST.get('codigo_estudiante')
-        semestres_ids = request.POST.getlist('semestre_id[]')  # Cambia para obtener todos los semestres seleccionados
+        semestres_ids = request.POST.getlist('semestre_id[]')
         secciones_seleccionadas_ids = request.POST.getlist('secciones_seleccionadas[]')
+
         # Calcular créditos totales de los cursos seleccionados
         total_creditos = 0
         for seccion_id in secciones_seleccionadas_ids:
@@ -233,17 +253,27 @@ def guardar_matricula(request):
                     })
 
             # Crear una matrícula para cada semestre y asignar las secciones correspondientes
-            for semestre_id, secciones in secciones_por_semestre.items():
-                semestre = Semestre.objects.get(id=semestre_id)
-                matricula, created = Matricula.objects.get_or_create(
-                    estudiante=estudiante,
-                    semestre=semestre,
-                )
+            with transaction.atomic():  # Comenzar una transacción
+                for semestre_id, secciones in secciones_por_semestre.items():
+                    semestre = Semestre.objects.get(id=semestre_id)
+                    matricula, created = Matricula.objects.get_or_create(
+                        estudiante=estudiante,
+                        semestre=semestre,
+                    )
 
-                for seccion in secciones:
-                    if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
-                        MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
+                    for seccion in secciones:
+                        # Verificar si la sección ya está registrada
+                        if not MatriculaCurso.objects.filter(matricula=matricula, seccion=seccion).exists():
+                            # Crear la matrícula del curso
+                            MatriculaCurso.objects.create(matricula=matricula, seccion=seccion)
 
+                            # Verificar si hay cupos disponibles y disminuir los cupos
+                            if seccion.cupos_totales > 0:
+                                seccion.cupos_totales -= 1
+                                seccion.save()  # Guardar el cambio en la sección
+                            else:
+                                return JsonResponse({'error': f'No hay cupos disponibles en la sección {seccion.nombre}.'})
+                
                 return JsonResponse({'success': 'Matrículas guardadas correctamente.'})
 
         except Estudiante.DoesNotExist:
@@ -254,7 +284,6 @@ def guardar_matricula(request):
             return JsonResponse({'error': 'Una de las secciones seleccionadas no existe.'})
 
     return JsonResponse({'error': 'Método no permitido.'})
-
 
 
 @login_required

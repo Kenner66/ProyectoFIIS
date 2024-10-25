@@ -127,37 +127,42 @@
     let totalCreditos = 0;
 
     function añadirSeccion(seccionId) {
-        const codigoEstudiante = document.getElementById('codigo_estudiante').value;
-        
-        fetch(`/matriculas/validar_seccion/${codigoEstudiante}/${seccionId}/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
+    const codigoEstudiante = document.getElementById('codigo_estudiante').value;
+    
+    fetch(`/matriculas/validar_seccion/${codigoEstudiante}/${seccionId}/`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Datos recibidos:', data);
+            if (data.error) {
+                alert(data.error);
+            } else if (Number(data.cupos) === 0) {
+                // Nueva validación: Si los cupos son 0, mostrar alerta y no permitir agregar la sección
+                alert(`No hay cupos disponibles para la sección ${data.seccion_nombre} del curso ${data.curso_nombre}.`);
+            } else {
+                const seccionesLista = document.getElementById('secciones-seleccionadas-lista');
+                const seccionesExistentes = Array.from(seccionesLista.getElementsByTagName('tr'));
+                const cursoYaAñadido = seccionesExistentes.some(row => row.cells[0].textContent === data.curso_nombre);
+
+                if (cursoYaAñadido) {
+                    alert(`Ya has añadido una sección del curso ${data.curso_nombre}.`);
                 } else {
-                    const seccionesLista = document.getElementById('secciones-seleccionadas-lista');
-                    const seccionesExistentes = Array.from(seccionesLista.getElementsByTagName('tr'));
-                    const cursoYaAñadido = seccionesExistentes.some(row => row.cells[0].textContent === data.curso_nombre);
+                    const nuevaFila = seccionesLista.insertRow();
+                    nuevaFila.setAttribute('data-seccion-id', seccionId);
+                    nuevaFila.setAttribute('data-creditos', data.creditos);
 
-                    if (cursoYaAñadido) {
-                        alert(`Ya has añadido una sección del curso ${data.curso_nombre}.`);
-                    } else {
-                        const nuevaFila = seccionesLista.insertRow();
-                        nuevaFila.setAttribute('data-seccion-id', seccionId);
-                        nuevaFila.setAttribute('data-creditos', data.creditos);
-
-                        nuevaFila.innerHTML = `
-                            <td>${data.curso_nombre}</td>
-                            <td>${data.seccion_nombre}</td>
-                            <td>${data.creditos}</td>
-                            <td><button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button></td>
-                        `;
-                        actualizarTotalCreditos();
-                    }
+                    nuevaFila.innerHTML = `
+                        <td>${data.curso_nombre}</td>
+                        <td>${data.seccion_nombre}</td>
+                        <td>${data.creditos}</td>
+                        <td><button onclick="eliminarSeccion(this, ${data.creditos})">Eliminar</button></td>
+                    `;
+                    actualizarTotalCreditos();
                 }
-            })
-            .catch(error => console.error('Error al validar la sección:', error));
-    }
+            }
+        })
+        .catch(error => console.error('Error al validar la sección:', error));
+}
+
 
     function eliminarSeccion(boton, creditos) {
         const fila = boton.closest('tr');

@@ -23,6 +23,6 @@ class SeccionForm(forms.ModelForm):
 
     def clean_cupos_totales(self):
         cupos_totales = self.cleaned_data.get('cupos_totales')
-        if cupos_totales <= 0:
+        if cupos_totales <= -1:
             raise forms.ValidationError("Los cupos totales deben ser un número positivo.")
         return cupos_totales

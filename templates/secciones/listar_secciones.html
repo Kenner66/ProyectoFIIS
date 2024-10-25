@@ -36,6 +36,23 @@
             </tbody>
         </table>
     </div>
+     <div class="pagination">
+        <span class="step-links">
+            {% if secciones.has_previous %}
+                <a href="?page=1">&laquo; primera</a>
+                <a href="?page={{ secciones.previous_page_number }}">anterior</a>
+            {% endif %}
+    
+            <span class="current">
+                Página {{ secciones.number }} de {{ secciones.paginator.num_pages }}.
+            </span>
+    
+            {% if secciones.has_next %}
+                <a href="?page={{ secciones.next_page_number }}">siguiente</a>
+                <a href="?page={{ secciones.paginator.num_pages }}">última &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 </div>
 {% endblock %}
 
