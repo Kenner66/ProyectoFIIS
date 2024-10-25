@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas Generales - PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        h2, h3, h4 {
+            color: #0056b3;
+        }
+        .statistics-container {
+            margin: 0 auto;
+            max-width: 800px;
+        }
+        .total-students, .geographic-distribution, .courses-statistics {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="statistics-container">
+        <h2>Estadísticas Generales</h2>
+
+        <div class="total-students">
+            <h3>Total de Estudiantes Matriculados Únicos: {{ total_estudiantes }}</h3>
+        </div>
+
+        <div class="geographic-distribution">
+            <h3>Distribución Geográfica de Estudiantes</h3>
+            <div>
+                <img src="{{ graph_geografica }}" alt="Gráfico de Distribución Geográfica">
+            </div>
+        </div>
+
+        <div class="courses-statistics">
+            <h3>Estudiantes por Curso</h3>
+            {% for ciclo, graph in graphs_curso_por_ciclo.items %}
+                <div class="course-graph">
+                    <h4>Ciclo {{ ciclo }}</h4>
+                    <div>
+                        <img src="{{ graph }}" alt="Gráfico de Estudiantes por Curso">
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

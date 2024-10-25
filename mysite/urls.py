@@ -30,6 +30,7 @@ urlpatterns = [
     path('semestre/', include('semestre.urls')), 
     path('matriculas/',include('matriculas.urls')),
     path('alumnos/',include('index.urls')),
+    path('dashboard/',include('estadisticas.urls'))
     
     
 ]

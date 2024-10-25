@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Estadísticas Generales{% endblock %}
+
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/estadisticas.css' %}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="statistics-container">
+    <h2>Estadísticas Generales</h2>
+    <a href="{% url 'generar_pdf_estadisticas' %}" class="button">Descargar PDF</a>
+    <div class="total-students">
+        <h3>Total de Estudiantes Matriculados Únicos: {{ total_estudiantes }}</h3>
+    </div>
+
+    <div class="geographic-distribution">
+        <h3>Distribución Geográfica de Estudiantes</h3>
+        <div id="geographic-graph">
+            {{ graph_geografica|safe }}
+        </div>
+    </div>
+
+    <div class="courses-statistics">
+        <h3>Estudiantes por Curso</h3>
+        {% for ciclo, graph in graphs_curso_por_ciclo.items %}
+            <div class="course-graph">
+                <h4>Ciclo {{ ciclo }}</h4>
+                <div id="course-graph-{{ ciclo }}">
+                    {{ graph|safe }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
