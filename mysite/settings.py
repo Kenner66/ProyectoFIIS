@@ -35,13 +35,18 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7p-lz)jc)&jtvb80^%3g^-d$$$b2q$hm#kbok=c)ol7-l-_d&j'
-
+SECRET_KEY = os.enviroment.get('SECRET_KEY',default='dadsadqweasdaadqqewq')
+#secret key estaba diferente antes
+#SECRET_KEY = 'django-insecure-7p-lz)jc)&jtvb80^%3g^-d$$$b2q$hm#kbok=c)ol7-l-_d&j'
 AUTH_USER_MODEL = 'usuarios.Usuario'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = 'RENDER' not in os.environ
+#DEBUG = True
 ALLOWED_HOSTS = []
+#Esto no estaba antes
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -65,6 +70,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    #whitenoise tambien
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -140,6 +147,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
+#modifiqué esto:
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static' # Si tienes una carpeta general de estáticos
