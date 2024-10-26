@@ -21,9 +21,9 @@ class Semestre(models.Model):
     def __str__(self):
         return f"{self.año} - {self.periodo}"
     
-    def cursos_disponibles_para_semestre(semestre):
+    def cursos_disponibles_para_semestre(self):
     # Si el periodo es "II", devolver solo cursos de ciclos pares
-        if semestre.periodo == 'II':
+        if self.periodo == 'II':
             cursos_disponibles = Curso.objects.filter(ciclo__in=[2, 4, 6, 8, 10])
         else:
             cursos_disponibles = Curso.objects.all()  # O cursos de ciclos impares según la lógica
