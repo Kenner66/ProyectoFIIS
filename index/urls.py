@@ -18,7 +18,6 @@ urlpatterns = [
     path('verificar_matricula/', views.verificar_matricula, name='verificar_matricula'),
     path('descargar_pdf/<int:estudiante_id>/', views.descargar_pdf_estudiante, name='descargar_pdf_estudiante'), # Asegúrate de tener la importación correcta
     path('cursos_por_ciclo/', views.cursos_por_ciclo, name='cursos_por_ciclo'),
-
 ]
 
 

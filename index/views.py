@@ -11,14 +11,7 @@ from estudiantes.models import Estudiante
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-#from reportlab.lib.pagesizes import letter
-#from reportlab.pdfgen import canvas
-#from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-#from reportlab.lib import colors
-#from reportlab.lib.units import inch
 from xhtml2pdf import pisa
-#from django.template.loader import render_to_string
-
 
 @login_required
 @role_required('Estudiante')

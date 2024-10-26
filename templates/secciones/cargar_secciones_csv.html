@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+{% block title %}Cargar Secciones{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Cargar Secciones desde CSV</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="csv_file">Seleccionar archivo CSV:</label>
+            <input type="file" name="csv_file" id="csv_file" required>
+        </div>
+        <button type="submit">Cargar Secciones</button>
+    </form>
+    <div class="instructions">
+        <br></br>
+        <p>Instrucciones para la carga masiva de Secciones</p>
+        <ol>
+            <li>Asegúrate de que los cursos y semestres ya existan en el sistema.</li>
+            <li>El archivo CSV debe contener las siguientes columnas: <strong>curso, nombre, cupos_totales y semestre</strong>.</li>
+            <li>Descarga la plantilla de ejemplo si lo necesitas.</li>
+            <li>Selecciona tu archivo CSV y presiona <strong>Cargar</strong> para cargar las secciones en el sistema.</li>
+        </ol>
+    </div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

@@ -136,8 +136,7 @@ def crear_matricula(request):
 @role_required('Administrador')
 def cargar_secciones(request, semestre_id):
     # Filtrar las secciones según el semestre_id
-    secciones = Seccion.objects.filter(semestre_id=semestre_id).values('id', 'curso__nombre', 'nombre')
-    
+    secciones = Seccion.objects.filter(semestre_id=semestre_id).order_by('curso__ciclo', 'nombre').values('id', 'curso__nombre', 'nombre')
     # Retornar las secciones en formato JSON
     return JsonResponse(list(secciones), safe=False)
 

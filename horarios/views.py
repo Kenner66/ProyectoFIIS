@@ -96,6 +96,69 @@ def editar_horario(request, horario_id):
 
 
 ############################################################################################
+import csv
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Seccion, Curso, Semestre  # Asegúrate de importar tus modelos
+
+@login_required
+@role_required('Administrador')
+def cargar_secciones_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file:
+            messages.error(request, 'Por favor, sube un archivo CSV.')
+            return render(request, 'secciones/cargar_secciones_csv.html')
+
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'El archivo subido no es un archivo CSV.')
+            return render(request, 'secciones/cargar_secciones_csv.html')
+
+        try:
+            file_data = csv_file.read().decode('latin-1')  # Para manejar posibles caracteres especiales
+            lines = file_data.splitlines()
+            reader = csv.DictReader(lines)
+
+            for row in reader:
+                try:
+                    curso = Curso.objects.get(nombre=row['curso'])  # Asegúrate de que estás buscando por el campo correcto
+
+                    # Verifica si el semestre está presente
+                    semestre_nombre = row.get('semestre')  # Obtén el semestre del CSV
+                    if semestre_nombre:  # Solo busca si se proporciona el semestre
+                        try:
+                            semestre = Semestre.objects.get(nombre=semestre_nombre)  # Busca el semestre por su nombre
+                        except Semestre.DoesNotExist:
+                            messages.warning(request, f'El semestre "{semestre_nombre}" no existe. Se omitirá esta sección.')
+                            continue
+                    else:
+                        semestre = None  # Asigna None si no se proporciona semestre
+
+                    seccion = Seccion(
+                        curso=curso,
+                        nombre=row['nombre'],
+                        cupos_totales=int(row['cupos_totales']),
+                        semestre=semestre  # Aquí puedes dejarlo como None si no se proporciona
+                    )
+                    seccion.save()
+
+                except Curso.DoesNotExist:
+                    messages.warning(request, f'El curso "{row["curso"]}" no existe. Se omitirá esta sección.')
+                    continue
+                except Exception as e:
+                    messages.error(request, f'Error al crear la sección "{row["nombre"]}": {str(e)}')
+                    continue
+
+            messages.success(request, 'Secciones cargadas exitosamente.')
+            return redirect('home_admin')
+
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al procesar el archivo: {str(e)}')
+
+    return render(request, 'secciones/cargar_secciones_csv.html')
+
+
 @login_required
 @role_required('Administrador')
 def listar_secciones(request):
