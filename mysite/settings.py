@@ -35,7 +35,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.enviroment.get('SECRET_KEY',default='dadsadqweasdaadqqewq')
+SECRET_KEY = os.environ.get('SECRET_KEY',default='dadsadqweasdaadqqewq')
 #secret key estaba diferente antes
 #SECRET_KEY = 'django-insecure-7p-lz)jc)&jtvb80^%3g^-d$$$b2q$hm#kbok=c)ol7-l-_d&j'
 AUTH_USER_MODEL = 'usuarios.Usuario'
