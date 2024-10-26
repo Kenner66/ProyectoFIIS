@@ -28,7 +28,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
-
+PORT = int(os.environ.get("PORT", 8000))
 
 
 # Quick-start development settings - unsuitable for production
