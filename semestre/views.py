@@ -4,13 +4,19 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Semestre
 from .forms import SemestreForm
+from django.contrib.auth.decorators import login_required
+from usuarios.decorators import role_required
 
 # Vista para listar los semestres
+@login_required
+@role_required('Administrador')
 def listar_semestres(request):
     semestres = Semestre.objects.all()
     return render(request, 'semestres/listar_semestres.html', {'semestres': semestres})
 
 # Vista para agregar un nuevo semestre
+@login_required
+@role_required('Administrador')
 def agregar_semestre(request):
     if request.method == 'POST':
         form = SemestreForm(request.POST)
@@ -22,6 +28,8 @@ def agregar_semestre(request):
     return render(request, 'semestres/agregar_semestre.html', {'form': form})
 
 # Vista para editar un semestre existente
+@login_required
+@role_required('Administrador')
 def editar_semestre(request, semestre_id):
     semestre = get_object_or_404(Semestre, id=semestre_id)
     if request.method == 'POST':
