@@ -23,7 +23,7 @@ def agregar_semestre(request):
             return redirect('listar_semestres')  # Redirige a la lista de semestres
     else:
         form = SemestreForm()
-    return render(request, 'semestres/agregar_semestre.html', {'form': form})
+    return render(request, 'Semestres/agregar_semestre.html', {'form': form})
 
 # Vista para editar un semestre existente
 @login_required
@@ -37,4 +37,4 @@ def editar_semestre(request, semestre_id):
             return redirect('listar_semestres')
     else:
         form = SemestreForm(instance=semestre)
-    return render(request, 'semestres/editar_semestre.html', {'form': form, 'semestre': semestre})
+    return render(request, 'Semestres/editar_semestre.html', {'form': form, 'semestre': semestre})
