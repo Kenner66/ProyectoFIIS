@@ -40,8 +40,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY',default='dadsadqweasdaadqqewq')
 #SECRET_KEY = 'django-insecure-7p-lz)jc)&jtvb80^%3g^-d$$$b2q$hm#kbok=c)ol7-l-_d&j'
 AUTH_USER_MODEL = 'usuarios.Usuario'
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = 'RENDER' not in os.environ
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
+#DEBUG = True
 ALLOWED_HOSTS = ['https://matricula-4nrt.onrender.com','localhost','127.0.0.1']
 #Esto no estaba antes
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
