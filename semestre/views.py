@@ -10,7 +10,7 @@ from usuarios.decorators import role_required
 @role_required('Administrador')
 def listar_semestres(request):
     semestres = Semestre.objects.all()
-    return render(request, 'semestres/listar_semestres.html', {'semestres': semestres})
+    return render(request, 'Semestres/hola.html', {'semestres': semestres})
 
 # Vista para agregar un nuevo semestre
 @login_required
