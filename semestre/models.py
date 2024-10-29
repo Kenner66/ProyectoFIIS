@@ -1,6 +1,5 @@
 # Create your models here.
 from django.db import models
-from django.core.exceptions import ValidationError
 from cursos.models import Curso
 
 class Semestre(models.Model):
