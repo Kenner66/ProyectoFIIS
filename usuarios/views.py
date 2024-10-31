@@ -71,6 +71,11 @@ def home_admin(request):
     return render(request, "home_admin.html")  # Home para el administrador
 
 @login_required
+@role_required('Director')
+def home_director(request):
+    return render(request, "home_director.html")  # Home para el administrador
+
+@login_required
 @role_required('Estudiante')
 def home_estudiante(request):
     # Asegúrate de que el usuario esté autenticado
@@ -92,6 +97,8 @@ def signin(request):
         # Redirige según el rol del usuario autenticado
         if request.user.is_rol_admin:  # Si es administrador
             return redirect('home_admin')
+        elif request.user.rol.nombre_rol == "Director":  # Si es director
+            return redirect('home_director')
         else:  # Asumimos que es estudiante
             return redirect('home_estudiante')
     if request.method == "GET":
@@ -116,6 +123,8 @@ def signin(request):
             # Verifica si el usuario es admin o estudiante
             if user.is_rol_admin:  # Si es administrador
                 return redirect('home_admin')  # Redirige a home_admin
+            elif request.user.rol.nombre_rol == "Director":  # Si es supervisor
+                return redirect('home_director')
             else:
                 return redirect('home_estudiante')  # Redirige a home_estudiante si es estudiante
     

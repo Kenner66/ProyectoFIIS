@@ -16,4 +16,5 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),  # Vista para confirmar el restablecimiento
     path('reset/done/', TemplateView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
     path('cargar-usuarios-csv/', views.cargar_usuarios_csv, name='cargar_usuarios_csv'),
+    path('home-director/', views.home_director, name='home_director'),
 ]   

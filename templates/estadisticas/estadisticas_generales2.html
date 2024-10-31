@@ -1,0 +1,57 @@
+{% extends 'base_director.html' %}
+
+
+{% block title %}Estadísticas Generales{% endblock %}
+
+{% block extra_css %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+{% endblock %}
+
+{% block content %}
+<div class="statistics-container">
+    <h2>Estadísticas Generales</h2>
+
+    <div class="total-students">
+        <h3>Total de Estudiantes Matriculados Únicos: {{ total_estudiantes }}</h3>
+    </div>
+
+    <div class="geographic-distribution">
+        <h3>Distribución Geográfica de Estudiantes</h3>
+        {% if graph_geografica %}
+        <div id="geographic-graph">
+            {{ graph_geografica|safe }}
+        </div>
+        {% else %}
+        <p>No hay datos disponibles para mostrar la distribución geográfica.</p>
+    {% endif %}
+    </div>
+
+    <div class="courses-statistics">
+        <h3>Estudiantes por Curso</h3>
+        {% for ciclo, graph in graphs_curso_paginados %}
+            <div class="course-graph">
+                <h4>Ciclo {{ ciclo }}</h4>
+                <div id="course-graph-{{ ciclo }}">
+                    {{ graph|safe }}
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- Paginación -->
+        <div class="pagination">
+            {% if graphs_curso_paginados.has_previous %}
+                <a href="?page={{ graphs_curso_paginados.previous_page_number }}">Anterior</a>
+            {% endif %}
+
+            <span>Página {{ graphs_curso_paginados.number }} de {{ graphs_curso_paginados.paginator.num_pages }}</span>
+
+            {% if graphs_curso_paginados.has_next %}
+                <a href="?page={{ graphs_curso_paginados.next_page_number }}">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
