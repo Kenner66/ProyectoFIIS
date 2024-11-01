@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+{% block title %}Cargar Historial de Notas{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Cargar Historial de Notas desde CSV</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="csv_file">Seleccionar archivo CSV:</label>
+            <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+        </div>
+        <button type="submit">Cargar Historial de Notas</button>
+    </form>
+    <div class="instructions">
+        <br></br>
+        <p>Instrucciones para la carga masiva de historial de notas</p>
+            <ol>
+                <li>Asegúrate de que los estudiantes, cursos y semestres ya existan en el sistema con el <strong>código del estudiante</strong>, <strong>nombre del curso</strong> y <strong>combinación de año y periodo del semestre</strong> correspondientes.</li>
+                <li>El archivo CSV debe contener las siguientes columnas: <strong>codigo_estudiante, nombre_curso, año, periodo, nota</strong>.</li>
+                <li>Descarga la plantilla de ejemplo si lo necesitas.</li>
+                <li>Selecciona tu archivo CSV y presiona <strong>Cargar</strong> para registrar el historial de notas en el sistema.</li>
+            </ol>
+        <!-- Botón de descarga de la plantilla CSV -->
+        <a href="{% static 'files/plantilla_historial_notas.csv' %}" download class="btn btn-add btn-carga">
+            Descargar Plantilla CSV
+        </a>
+    </div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

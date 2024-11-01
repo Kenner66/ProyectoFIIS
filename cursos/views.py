@@ -2,6 +2,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from .models import Curso,HistorialNotas
 from estudiantes.models import Estudiante
+from semestre.models import Semestre
 from .forms import CursoForm,HistorialNotasForm
 from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required 
@@ -10,6 +11,58 @@ import csv
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.core.paginator import Paginator
+
+@login_required
+@role_required('Administrador')
+def cargar_historial_notas_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file:
+            messages.error(request, 'Por favor, sube un archivo CSV.')
+            return render(request, 'cursos/cargar_historial_notas_csv.html')
+
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'El archivo subido no es un archivo CSV.')
+            return render(request, 'cursos/cargar_historial_notas_csv.html')
+
+        # Leer el archivo CSV
+        file_data = csv_file.read().decode('latin-1')
+        lines = file_data.splitlines()
+        reader = csv.DictReader(lines)
+
+        for row in reader:
+            try:
+                # Obtener el estudiante, curso y semestre
+                estudiante = Estudiante.objects.get(codigo=row['codigo_estudiante'])
+                curso = Curso.objects.get(nombre=row['nombre_curso'])
+                semestre = Semestre.objects.get(año=row['año'], periodo=row['periodo'])  # Ajuste aquí
+
+                # Verificar si la combinación de estudiante, curso y semestre ya existe
+                if HistorialNotas.objects.filter(estudiante=estudiante, curso=curso, semestre=semestre).exists():
+                    messages.warning(request, f'El historial para {estudiante.usuario.username} en el curso {curso.nombre} y semestre {semestre} ya existe y se omitirá.')
+                    continue  # Omitir si ya existe
+
+                # Crear un nuevo registro de historial
+                historial_nota = HistorialNotas(
+                    estudiante=estudiante,
+                    curso=curso,
+                    nota=row['nota'],
+                    semestre=semestre
+                )
+                historial_nota.save()
+
+            except Estudiante.DoesNotExist:
+                messages.error(request, f'El estudiante con código "{row["codigo_estudiante"]}" no existe.')
+            except Curso.DoesNotExist:
+                messages.error(request, f'El curso con nombre "{row["nombre_curso"]}" no existe.')
+            except Semestre.DoesNotExist:
+                messages.error(request, f'El semestre con año "{row["año"]}" y periodo "{row["periodo"]}" no existe.')
+            except Exception as e:
+                messages.error(request, f'Error al cargar historial para el estudiante con código {row["codigo_estudiante"]}: {str(e)}')
+
+        messages.success(request, 'Historiales de notas cargados exitosamente.')
+    return render(request, 'cursos/cargar_historial_notas_csv.html')
+
 
 @login_required
 @role_required('Administrador')
