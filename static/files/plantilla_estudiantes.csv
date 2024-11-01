@@ -1,6 +1,2 @@
-username,codigo,dni,nombre,apellido,fecha_nacimiento,base,carrera,activo
-2020102466@unfv.edu.pe,2020102466,12345678,Juan,Pérez,2000-01-15,2020,Ingeniería de Sistemas,True
-2020102467@unfv.edu.pe,2020102467,23456789,Maria,Gómez,2001-02-20,2020,Ingeniería de Sistemas,True
-2020102468@unfv.edu.pe,2020102468,34567890,Carlos,Morales,2002-03-25,2020,Ingeniería de Sistemas,False
-2020102469@unfv.edu.pe,2020102469,45678901,Ana,Ramirez,2003-04-30,2020,Ingeniería de Sistemas,True
-2020102470@unfv.edu.pe,2020102470,56789012,Luis,Fernandez,2004-05-05,2020,Ingeniería de Sistemas,True
+username,email,rol,codigo,base,carrera,activo,dni,nombre,apellido,fecha_nacimiento
+2020102460@unfv.edu.pe,2020102460@unfv.edu.pe,Estudiante,2020102460,2020,Ingenieria de Sistemas,True,72394227,Luis,Donayre,2000-01-01

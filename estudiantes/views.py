@@ -4,10 +4,17 @@ from .forms import EstudianteForm,InformacionPersonalForm
 from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required 
 from django.contrib import messages
-from usuarios.models import Usuario
+from usuarios.models import Usuario,Rol
 from django.core.paginator import Paginator
-import csv
+import string
+import secrets
 
+import csv
+def generar_contraseña(length=10):
+    """Genera una contraseña aleatoria de longitud especificada."""
+    caracteres = string.ascii_letters + string.digits + string.punctuation
+    contraseña = ''.join(secrets.choice(caracteres) for _ in range(length))
+    return contraseña
 @login_required
 @role_required('Administrador')
 def cargar_estudiantes_csv(request):
@@ -22,37 +29,44 @@ def cargar_estudiantes_csv(request):
             return render(request, 'estudiantes/cargar_estudiantes_csv.html')
 
         # Leer el archivo CSV
-        file_data = csv_file.read().decode('latin-1')
+        file_data = csv_file.read().decode('utf-8')
         lines = file_data.splitlines()
         reader = csv.DictReader(lines)
 
         for row in reader:
             username = row['username']
+            email = row['email']
+            rol_nombre = row['rol']
+            codigo = row['codigo']
 
-            try:
-                usuario = Usuario.objects.get(username=username)  # Verificar si el usuario existe
-            except Usuario.DoesNotExist:
-                messages.error(request, f'El usuario con username "{username}" no existe.')
-                continue  # Saltar al siguiente registro si no existe el usuario
+            # Obtener o crear el usuario
+            usuario, created = Usuario.objects.get_or_create(
+                username=username,
+                defaults={
+                    'email': email,
+                    'rol': Rol.objects.get_or_create(nombre_rol=rol_nombre)[0],
+                }
+            )
 
-            # Verificar si el estudiante ya existe
-            if Estudiante.objects.filter(codigo=row['codigo']).exists():
-                estudiante = Estudiante.objects.get(codigo=row['codigo'])
-                messages.warning(request, f'El estudiante con código {row["codigo"]} ya existe y se omitirá.')
-                continue  # O, si prefieres, puedes actualizar el estudiante en lugar de omitirlo
-            
-            try:
-                # Crear el nuevo estudiante
-                estudiante = Estudiante(
-                    usuario=usuario,
-                    codigo=row['codigo'],
-                    base=row['base'],
-                    carrera=row['carrera'],
-                    activo=row.get('activo', 'True') == 'True'
-                )
-                estudiante.save()
+            if created:
+                # Si el usuario es nuevo, generamos una contraseña y lo guardamos
+                usuario.set_password(generar_contraseña())
+                usuario.save()
+                messages.info(request, f'Usuario "{username}" creado.')
 
-                # Crear la información personal
+            # Crear o actualizar el estudiante
+            estudiante, estudiante_created = Estudiante.objects.get_or_create(
+                usuario=usuario,
+                defaults={
+                    'codigo': codigo,
+                    'base': row['base'],
+                    'carrera': row['carrera'],
+                    'activo': row.get('activo', 'True') == 'True',
+                }
+            )
+
+            if estudiante_created:
+                # Crear la información personal asociada al estudiante
                 informacion_personal = InformacionPersonal(
                     estudiante=estudiante,
                     dni=row['dni'],
@@ -61,12 +75,12 @@ def cargar_estudiantes_csv(request):
                     fecha_nacimiento=row['fecha_nacimiento']
                 )
                 informacion_personal.save()
+                messages.info(request, f'Estudiante con código "{codigo}" creado.')
+            else:
+                messages.warning(request, f'El estudiante con código "{codigo}" ya existe y se omitió.')
 
-            except Exception as e:
-                messages.error(request, f'Error al crear estudiante para "{username}": {str(e)}')
-                continue
+        messages.success(request, 'Usuarios y estudiantes cargados exitosamente.')
 
-        messages.success(request, 'Estudiantes cargados exitosamente.')
     return render(request, 'estudiantes/cargar_estudiantes_csv.html')
 
 
