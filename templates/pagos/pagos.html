@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+<body>
+    <h1>Pagar con Mercado Pago aaaaa</h1>
+    <div id="boton-pago"></div>
+    <script>
+        const mp = new MercadoPago('{{ public_key }}', {
+            locale: 'es-AR'
+        });
+
+        mp.checkout({
+            preference: {
+                id: '{{ preference_id }}'
+            },
+            render: {
+                container: '#boton-pago',
+                label: 'Pagar ahora',
+            }
+        });
+    </script>
+</body>
+</html>
