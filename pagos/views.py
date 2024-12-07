@@ -13,7 +13,7 @@ def crear_preferencia(request):
             {
                 "title": "Matrícula Universitaria",  # Nombre del producto
                 "quantity": 1,  # Cantidad
-                "unit_price": 65.0,  # Precio del producto
+                "unit_price": 0.10,  # Precio del producto
             }
         ],
         "back_urls": {
