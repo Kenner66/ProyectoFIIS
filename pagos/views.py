@@ -13,13 +13,13 @@ def crear_preferencia(request):
             {
                 "title": "Matrícula Universitaria",  # Nombre del producto
                 "quantity": 1,  # Cantidad
-                "unit_price": 0.10,  # Precio del producto
+                "unit_price": 0.50  ,  # Precio del producto
             }
         ],
         "back_urls": {
-            "success": "https://matricula-4nrt.onrender.com//pagos/success",  # URL de éxito
-            "failure": "https://matricula-4nrt.onrender.com//pagos/failure",  # URL de fracaso
-            "pending": "https://matricula-4nrt.onrender.com//pagos/pending",  # URL de pendiente
+            "success": "https://matricula-4nrt.onrender.com//pagos/",  # URL de éxito
+            "failure": "https://matricula-4nrt.onrender.com//pagos/",  # URL de fracaso
+            "pending": "https://matricula-4nrt.onrender.com//pagos/",  # URL de pendiente
         },
         "auto_return": "approved",  # Redirigir automáticamente a la página de éxito si el pago es aprobado
     }
