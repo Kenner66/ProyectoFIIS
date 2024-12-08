@@ -12,6 +12,7 @@ def crear_preferencia(request):
                 "title": "Pago de matrícula",
                 "quantity": 1,
                 "unit_price": 1,
+                "currency_id": "PEN",
             }
         ],
         "back_urls": {
