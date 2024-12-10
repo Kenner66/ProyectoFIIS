@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Lista de Pagos{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/student_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="student-list-container">
+    <h2>Lista de Pagos Realizados</h2>
+    <div class="table-responsive">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>ID Operación</th>
+                    <th>Monto</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                    <th>Fecha de Creación</th>
+                    <th>Método de Pago</th>
+                    <th>Últimos Dígitos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in pagos %}
+                <tr>
+                    <td>{{ pago.numero_operacion }}</td>
+                    <td>{{ pago.monto }}</td>
+                    <td>{{ pago.comprador_email }}</td>
+                    <td>{{ pago.estado }}</td>
+                    <td>{{ pago.fecha_pago }}</td>
+                    <td>{{ pago.metodo_pago }}</td>
+                    <td>{{ pago.tarjeta_ultimos_digitos }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">No hay pagos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
