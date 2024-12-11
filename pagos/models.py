@@ -1,4 +1,5 @@
 from django.db import models
+from estudiantes.models import Estudiante
 
 # Create your models here.
 class Pago(models.Model):
@@ -14,8 +15,8 @@ class Pago(models.Model):
         return f"Pago {self.numero_operacion} - {self.estado}"
 
 class ValidacionPago(models.Model):
-    estudiante = models.OneToOneField('Estudiante', on_delete=models.CASCADE)
-    pago = models.OneToOneField('Pago', on_delete=models.CASCADE)
+    estudiante = models.OneToOneField(Estudiante, on_delete=models.CASCADE)
+    pago = models.OneToOneField(Pago, on_delete=models.CASCADE)
     fecha_validacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -1,3 +1,4 @@
+'''
 from django import forms
 
 class VerificarPagoForm(forms.Form):
@@ -7,3 +8,4 @@ class VerificarPagoForm(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el número de operación'}),
         required=True
     )
+'''

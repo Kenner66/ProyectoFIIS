@@ -1,9 +1,13 @@
-{% extends 'base.html' %}
-
+{% extends 'base_alumnos.html' %}
+{% load static %}
 {% block title %}Validar Pago{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_form.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="validar-pago-container">
+<div class="registration-container">
     <h2>Validar tu Pago</h2>
     <form method="POST">
         {% csrf_token %}

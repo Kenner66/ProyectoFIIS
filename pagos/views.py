@@ -1,3 +1,4 @@
+
 import mercadopago
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -5,11 +6,12 @@ from django.http import HttpResponse
 import mercadopago
 from .utils import registrar_pagos,obtener_pagos_realizados  
 from .models import Pago
-from .models import Pago, Estudiante, ValidacionPago
+from .models import Pago, ValidacionPago
+from estudiantes.models import Estudiante
 import mercadopago
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Pago, Estudiante, ValidacionPago    
+from .models import Pago, ValidacionPago    
 from django.contrib.auth.decorators import login_required
 from usuarios.decorators import role_required
 
@@ -55,3 +57,4 @@ def lista_pagos_admin(request):
     pagos = Pago.objects.all()
 
     return render(request, "pagos/lista_pagos.html", {"pagos": pagos})
+    

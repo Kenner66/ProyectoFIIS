@@ -1,3 +1,4 @@
+
 import mercadopago
 from django.conf import settings
 from .models import Pago
@@ -41,3 +42,5 @@ def registrar_pagos(pagos):
                 tarjeta_ultimos_digitos=pago.get("card", {}).get("last_four_digits", ""),
             )
             nuevo_pago.save()
+
+
