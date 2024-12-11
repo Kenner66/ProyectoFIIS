@@ -3,9 +3,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import mercadopago
-from django.http import JsonResponse
-from .forms import VerificarPagoForm
-from .utils import verificar_pago,registrar_pagos,obtener_pagos_realizados  
+from .utils import registrar_pagos,obtener_pagos_realizados  
 from .models import Pago
 from .models import Pago, Estudiante, ValidacionPago
 import mercadopago
