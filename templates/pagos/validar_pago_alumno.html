@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Validar Pago{% endblock %}
+
+{% block content %}
+<div class="validar-pago-container">
+    <h2>Validar tu Pago</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="numero_operacion">Número de Operación:</label>
+            <input type="text" name="numero_operacion" id="numero_operacion" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Validar</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,21 +1,7 @@
 import mercadopago
 from django.conf import settings
 from .models import Pago
-from datetime import datetime, timedelta
-
-
-def verificar_pago(payment_id):
-    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
-    payment_info = sdk.payment().get(payment_id)
-    if payment_info["status"] == 200:
-        return payment_info["response"]
-    else:
-        return {"error": "No se pudo verificar el pago"}
-    
-import mercadopago
-from datetime import datetime, timedelta
-from django.conf import settings
-from .models import Pago
+from datetime import datetime, timedelta    
 
 def obtener_pagos_realizados():
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
