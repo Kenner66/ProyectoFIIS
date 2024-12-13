@@ -18,35 +18,36 @@ from usuarios.decorators import role_required
 @login_required
 @role_required('Estudiante')
 def validar_pago_alumno(request):
+    estudiante = Estudiante.objects.filter(usuario=request.user).first()
+
+    if not estudiante:
+        messages.error(request, "No se encontró un perfil de estudiante asociado a tu cuenta.")
+        return redirect('validar_pago_alumno')
+
     if request.method == "POST":
         numero_operacion = request.POST.get('numero_operacion')
-        estudiante = Estudiante.objects.filter(usuario=request.user).first()
 
-        if not estudiante:
-            messages.error(request, "No se encontró un perfil de estudiante asociado a tu cuenta.")
-            return redirect('validar_pago_alumno')
-
-        # Buscar el pago
+        # Buscar el pago por número de operación y estado aprobado
         pago = Pago.objects.filter(numero_operacion=numero_operacion, estado="approved").first()
 
         if not pago:
             messages.error(request, "El número de operación no es válido o el pago no está aprobado.")
             return redirect('validar_pago_alumno')
 
-        # Verificar si el pago ya está asociado
+        # Verificar si el pago ya está asociado a un estudiante
         if ValidacionPago.objects.filter(pago=pago).exists():
             messages.error(request, "Este número de operación ya está asociado a otro estudiante.")
             return redirect('validar_pago_alumno')
 
-        # Verificar si el estudiante ya tiene un pago asociado
+        # Verificar si el estudiante ya tiene un pago validado
         if ValidacionPago.objects.filter(estudiante=estudiante).exists():
-            messages.error(request, "Ya tienes un pago validado. No puedes validar otro.")
-            return redirect('validar_pago_alumno')
+            messages.success(request, "Ya tienes un pago validado. Puedes proceder con tu matrícula.")
+            return redirect('crear_matricula_estudiante')
 
         # Asociar el pago al estudiante
         ValidacionPago.objects.create(estudiante=estudiante, pago=pago)
         messages.success(request, "Pago validado con éxito. Puedes proceder con tu matrícula.")
-        return redirect('crear_matricula_estudiante')  # Redirige al template de matrícula
+        return redirect('crear_matricula_estudiante')
 
     return render(request, 'pagos/validar_pago_alumno.html')
 
