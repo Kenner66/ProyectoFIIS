@@ -24,6 +24,11 @@ def validar_pago_alumno(request):
         messages.error(request, "No se encontró un perfil de estudiante asociado a tu cuenta.")
         return redirect('validar_pago_alumno')
 
+    # Verificar si el estudiante ya tiene un pago validado
+    if ValidacionPago.objects.filter(estudiante=estudiante).exists():
+        messages.success(request, "Ya tienes un pago validado. Puedes proceder con tu matrícula.")
+        return redirect('crear_matricula_estudiante')
+
     if request.method == "POST":
         numero_operacion = request.POST.get('numero_operacion')
 
@@ -34,15 +39,10 @@ def validar_pago_alumno(request):
             messages.error(request, "El número de operación no es válido o el pago no está aprobado.")
             return redirect('validar_pago_alumno')
 
-        # Verificar si el pago ya está asociado a un estudiante
+        # Verificar si el pago ya está asociado a otro estudiante
         if ValidacionPago.objects.filter(pago=pago).exists():
             messages.error(request, "Este número de operación ya está asociado a otro estudiante.")
             return redirect('validar_pago_alumno')
-
-        # Verificar si el estudiante ya tiene un pago validado
-        if ValidacionPago.objects.filter(estudiante=estudiante).exists():
-            messages.success(request, "Ya tienes un pago validado. Puedes proceder con tu matrícula.")
-            return redirect('crear_matricula_estudiante')
 
         # Asociar el pago al estudiante
         ValidacionPago.objects.create(estudiante=estudiante, pago=pago)
@@ -50,6 +50,7 @@ def validar_pago_alumno(request):
         return redirect('crear_matricula_estudiante')
 
     return render(request, 'pagos/validar_pago_alumno.html')
+
 
 @login_required
 @role_required('Administrador')
