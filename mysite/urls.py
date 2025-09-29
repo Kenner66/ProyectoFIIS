@@ -32,5 +32,5 @@ urlpatterns = [
     path('alumnos/',include('index.urls')),
     path('dashboard/',include('estadisticas.urls')),
     path('pagos/', include('pagos.urls')),
-    
+    path('payments/',include('payments.urls'))
 ]

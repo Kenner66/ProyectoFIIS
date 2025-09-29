@@ -48,15 +48,19 @@
                     <span class="material-icons-sharp">menu_book</span>
                     <h3>Matriculas</h3>
                 </a>     
-                      
                 <a href=https://mpago.la/2NvBtDE>
                     <span class="material-icons-sharp">payment</span>
                     <h3>Pagos</h3>
                 </a>
+                <a href="{% url 'payments_index' %}">
+                    <span class="material-icons-sharp">payment</span>
+                    <h3>COINBASE</h3>
+                </a>   
                 <a href="{% url 'signout' %}">  <!-- Aquí estaba mal cerrado el tag -->
                     <span class="material-icons-sharp">logout</span>
                     <h3>Cerrar Sesión</h3>
                 </a>
+                
             </div>
         </aside>
         <!--Fin de Barra Lateral Izquierda-->

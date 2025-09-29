@@ -20,6 +20,8 @@ LOGIN_URL = 'signin'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'signin'
 
+
+
 # Configuración de correo para Outlook
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.office365.com'
@@ -33,6 +35,10 @@ PORT = int(os.environ.get("PORT", 8000))
 load_dotenv() 
 MERCADOPAGO_PUBLIC_KEY = os.getenv('MERCADOPAGO_PUBLIC_KEY')
 MERCADOPAGO_ACCESS_TOKEN = os.getenv('MERCADOPAGO_ACCESS_TOKEN')
+
+COINBASE_API_KEY = os.getenv("COINBASE_API_KEY")
+#COINBASE_WEBHOOK_SHARED_SECRET = os.getenv("COINBASE_WEBHOOK_SHARED_SECRET")
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -69,7 +75,8 @@ INSTALLED_APPS = [
     'semestre',
     'matriculas',
     'estadisticas',
-    'pagos'
+    'pagos',
+    'payments',
 ]
 
 MIDDLEWARE = [
