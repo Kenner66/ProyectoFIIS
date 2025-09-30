@@ -46,10 +46,10 @@ def create_payment(request):
 
 # Éxito y cancelación
 def success(request):
-    return render(request, 'success.html')
+    return render(request, 'payments/success.html')
 
 def cancel(request):
-    return render(request, 'cancel.html')
+    return render(request, 'payments/cancel.html')
 
 # Webhook Coinbase
 @csrf_exempt  # Coinbase no envía CSRF token
